@@ -18,7 +18,7 @@ Found a bug? Please report it through one of these channels:
 
 | Component | Status | URL |
 |-----------|--------|-----|
-| **Production App** | 🟢 Live | [http://4.213.183.139](http://4.213.183.139) |
+| **Production App** | 🟢 Live | [restaurant-daily.mindweave.tech](http://restaurant-daily.mindweave.tech) |
 | **Production Server** | 🟢 PM2 Managed | http://localhost:3000 |
 | **Database** | 🟡 File-based | Local JSON (planned: PostgreSQL) |
 | **Tests** | 🟢 Passing | [4/4 Playwright tests](./TEST_REPORT.md) |
@@ -152,7 +152,8 @@ src/
 - **SSL**: Not yet configured (HTTP only)
 
 ### Production Access
-- **Live App**: [http://4.213.183.139](http://4.213.183.139)
+- **Live App**: [restaurant-daily.mindweave.tech](http://restaurant-daily.mindweave.tech)
+- **Fallback IP**: [4.213.183.139](http://4.213.183.139)
 - **Mobile Friendly**: Works on iPhone Safari
 - **Performance**: Optimized with gzip compression
 
