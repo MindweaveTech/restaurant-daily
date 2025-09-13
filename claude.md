@@ -86,7 +86,7 @@ pm2 delete restaurant-daily   # Remove from PM2
 
 ### Quick Access
 - **Local Development**: http://localhost:3000
-- **Production Access**: http://restaurant-daily.mindweave.tech
+- **Production Access**: https://restaurant-daily.mindweave.tech
 - **Fallback IP**: http://4.213.183.139
 - **Mobile Testing**: Works on iPhone Safari
 - **Production Server**: PM2 managed, auto-restart enabled

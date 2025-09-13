@@ -18,7 +18,7 @@ Found a bug? Please report it through one of these channels:
 
 | Component | Status | URL |
 |-----------|--------|-----|
-| **Production App** | 🟢 Live | [restaurant-daily.mindweave.tech](http://restaurant-daily.mindweave.tech) |
+| **Production App** | 🟢 Live | [restaurant-daily.mindweave.tech](https://restaurant-daily.mindweave.tech) |
 | **Production Server** | 🟢 PM2 Managed | http://localhost:3000 |
 | **Database** | 🟡 File-based | Local JSON (planned: PostgreSQL) |
 | **Tests** | 🟢 Passing | [4/4 Playwright tests](./TEST_REPORT.md) |
@@ -149,10 +149,10 @@ src/
 - **Azure VM**: Ubuntu Linux
 - **Public IP**: 4.213.183.139
 - **Nginx Config**: `/etc/nginx/sites-available/restaurant-daily`
-- **SSL**: Not yet configured (HTTP only)
+- **SSL**: ✅ Let's Encrypt (HTTPS with auto-renewal)
 
 ### Production Access
-- **Live App**: [restaurant-daily.mindweave.tech](http://restaurant-daily.mindweave.tech)
+- **Live App**: [restaurant-daily.mindweave.tech](https://restaurant-daily.mindweave.tech)
 - **Fallback IP**: [4.213.183.139](http://4.213.183.139)
 - **Mobile Friendly**: Works on iPhone Safari
 - **Performance**: Optimized with gzip compression

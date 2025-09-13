@@ -205,7 +205,7 @@ Mobile Chrome (Pixel 5):
 
 **Report Generated:** $(date +"%Y-%m-%d %H:%M:%S")
 **Environment:** Production (PM2 Managed)
-**Live URL:** [http://4.213.183.139](http://4.213.183.139)
+**Live URL:** [https://restaurant-daily.mindweave.tech](https://restaurant-daily.mindweave.tech)
 **Repository:** [MindweaveTech/restaurant-daily](https://github.com/MindweaveTech/restaurant-daily)
 **Framework:** Playwright v1.55.0
 **Node.js:** v24.7.0

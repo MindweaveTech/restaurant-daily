@@ -127,5 +127,5 @@ npx playwright show-report
 
 **Generated:** $(date +%Y--%m--%d\ %H:%M)
 **Environment:** Production (PM2 managed)
-**Live URL:** [http://4.213.183.139](http://4.213.183.139)
+**Live URL:** [https://restaurant-daily.mindweave.tech](https://restaurant-daily.mindweave.tech)
 **Repository:** [MindweaveTech/restaurant-daily](https://github.com/MindweaveTech/restaurant-daily)
