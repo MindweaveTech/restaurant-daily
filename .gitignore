@@ -15,6 +15,9 @@
 /test-results/
 /playwright-report/
 
+# Keep specific test reports in docs
+!/docs/reports/latest-test-report/
+
 # next.js
 /.next/
 /out/

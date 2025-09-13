@@ -21,7 +21,7 @@ Found a bug? Please report it through one of these channels:
 | **Production App** | 🟢 Live | [http://4.213.183.139](http://4.213.183.139) |
 | **Production Server** | 🟢 PM2 Managed | http://localhost:3000 |
 | **Database** | 🟡 File-based | Local JSON (planned: PostgreSQL) |
-| **Tests** | 🟢 Passing | 4/4 Playwright tests |
+| **Tests** | 🟢 Passing | [4/4 Playwright tests](./TEST_REPORT.md) |
 | **Nginx Proxy** | 🟢 Active | Port 80 → 3000 |
 
 ---
@@ -58,7 +58,12 @@ npm run test:ui
 
 # Run tests in headed mode
 npm run test:headed
+
+# View detailed test report
+open docs/reports/latest-test-report/index.html
 ```
+
+**📊 [View Detailed Test Report](./TEST_REPORT.md)**
 
 ## 🏗️ Project Architecture
 
