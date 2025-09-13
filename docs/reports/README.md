@@ -4,26 +4,38 @@ This directory contains test reports and documentation for the Restaurant Daily 
 
 ## Available Reports
 
-### Latest Test Report
-- **Location:** `latest-test-report/index.html`
-- **Type:** Playwright HTML Report
+### 📋 Markdown Reports (GitHub-Friendly)
+- **Detailed Report:** [DETAILED_TEST_REPORT.md](./DETAILED_TEST_REPORT.md)
+- **Summary Report:** [../../TEST_REPORT.md](../../TEST_REPORT.md)
 - **Status:** ✅ 4/4 Tests Passing
 - **Last Updated:** $(date +%Y--%m--%d)
 
-### How to View Reports
+### 🌐 HTML Report (Local Viewing)
+- **Location:** `latest-test-report/index.html`
+- **Type:** Interactive Playwright HTML Report
+- **Best For:** Local development and debugging
 
-#### HTML Test Report (Detailed)
+## How to View Reports
+
+### GitHub/Web Viewing (Recommended)
 ```bash
-# Open in browser
-open docs/reports/latest-test-report/index.html
+# Detailed markdown report (renders on GitHub)
+https://github.com/MindweaveTech/restaurant-daily/blob/main/docs/reports/DETAILED_TEST_REPORT.md
 
-# Or use Playwright command
-npx playwright show-report docs/reports/latest-test-report
+# Quick summary
+https://github.com/MindweaveTech/restaurant-daily/blob/main/TEST_REPORT.md
 ```
 
-#### Markdown Summary
+### Local Development
 ```bash
-# View test summary
+# Interactive HTML report
+npx playwright show-report docs/reports/latest-test-report
+
+# Or open directly
+open docs/reports/latest-test-report/index.html
+
+# Markdown reports
+cat docs/reports/DETAILED_TEST_REPORT.md
 cat TEST_REPORT.md
 ```
 

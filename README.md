@@ -59,11 +59,14 @@ npm run test:ui
 # Run tests in headed mode
 npm run test:headed
 
-# View detailed test report
+# View detailed test report (GitHub-friendly)
+cat docs/reports/DETAILED_TEST_REPORT.md
+
+# View interactive HTML report (local only)
 open docs/reports/latest-test-report/index.html
 ```
 
-**📊 [View Detailed Test Report](./TEST_REPORT.md)**
+**📊 [View Test Summary](./TEST_REPORT.md) | [Detailed Report](./docs/reports/DETAILED_TEST_REPORT.md)**
 
 ## 🏗️ Project Architecture
 

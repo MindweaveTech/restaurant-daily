@@ -15,8 +15,8 @@
 /test-results/
 /playwright-report/
 
-# Keep specific test reports in docs
-!/docs/reports/latest-test-report/
+# Keep markdown reports only (HTML reports are for local use)
+!/docs/reports/*.md
 
 # next.js
 /.next/
