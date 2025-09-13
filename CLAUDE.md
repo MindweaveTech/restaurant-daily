@@ -74,9 +74,9 @@ pm2 delete restaurant-daily   # Remove from PM2
 │   ├── store/
 │   ├── types/
 │   └── hooks/
-├── claude.md (this file)
-├── plan.md (project roadmap)
-├── tasks.md (task management - window size: 5)
+├── CLAUDE.md (this file)
+├── PLAN.md (project roadmap)
+├── TASKS.md (task management - window size: 5)
 └── package.json
 ```
 

@@ -55,9 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 - Complete README with badges, quick start, and deployment info
-- Technical documentation (claude.md) with server configuration
-- Project roadmap (plan.md) with phased development approach
-- Task management (tasks.md) with active/completed tracking
+- Technical documentation (CLAUDE.md) with server configuration
+- Project roadmap (PLAN.md) with phased development approach
+- Task management (TASKS.md) with active/completed tracking
 - Test reporting with both HTML and markdown formats
 
 ---
