@@ -34,7 +34,7 @@ export default function Home() {
             <h1 className="text-4xl font-bold text-gray-800">Restaurant Daily</h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Track your restaurant's performance with ease. Manage cash sessions, vouchers,
+            Track your restaurant&apos;s performance with ease. Manage cash sessions, vouchers,
             and payments all in one place.
           </p>
         </header>

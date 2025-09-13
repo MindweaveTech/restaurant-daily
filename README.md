@@ -19,7 +19,7 @@ Found a bug? Please report it through one of these channels:
 | Component | Status | URL |
 |-----------|--------|-----|
 | **Production App** | 🟢 Live | [http://4.213.183.139](http://4.213.183.139) |
-| **Development Server** | 🟢 Running | http://localhost:3000 |
+| **Production Server** | 🟢 PM2 Managed | http://localhost:3000 |
 | **Database** | 🟡 File-based | Local JSON (planned: PostgreSQL) |
 | **Tests** | 🟢 Passing | 4/4 Playwright tests |
 | **Nginx Proxy** | 🟢 Active | Port 80 → 3000 |
@@ -69,6 +69,8 @@ npm run test:headed
 - **Forms**: React Hook Form + Zod validation
 - **Icons**: Lucide React
 - **Testing**: Playwright
+- **Process Manager**: PM2 for production
+- **Git Hooks**: Husky (pre-push validation)
 - **Deployment**: Azure VM with nginx reverse proxy
 
 ### Core Features
@@ -123,6 +125,16 @@ src/
 | `npm run test` | Run Playwright tests |
 | `npm run test:ui` | Interactive test runner |
 
+### PM2 Commands (Production)
+
+| Command | Description |
+|---------|-----------|
+| `pm2 status` | Check running processes |
+| `pm2 logs restaurant-daily` | View application logs |
+| `pm2 restart restaurant-daily` | Restart the app |
+| `pm2 stop restaurant-daily` | Stop the app |
+| `pm2 monit` | Real-time monitoring |
+
 ## 🌐 Deployment
 
 ### Current Setup
@@ -143,6 +155,8 @@ src/
 - [x] Mobile-responsive design
 - [x] Testing framework
 - [x] Deployment infrastructure
+- [x] PM2 production setup
+- [x] Pre-push testing hooks (Husky)
 
 ### Phase 2: Authentication (Next)
 - [ ] Phone number input component

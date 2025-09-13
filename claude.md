@@ -11,12 +11,21 @@ npm run build
 
 ### Development Commands
 ```bash
-npm run dev
-npm start
-npm run build
+npm run dev           # Development server (Turbopack)
+npm start             # Production server (PM2 managed)
+npm run build         # Production build
 npm run test          # Run Playwright tests
 npm run test:ui       # Run tests with UI
 npm run test:headed   # Run tests in headed mode
+```
+
+### Production Management
+```bash
+pm2 status            # Check PM2 processes
+pm2 logs restaurant-daily  # View app logs
+pm2 restart restaurant-daily  # Restart app
+pm2 stop restaurant-daily     # Stop app
+pm2 delete restaurant-daily   # Remove from PM2
 ```
 
 ### Current Deployment Setup
@@ -33,7 +42,9 @@ npm run test:headed   # Run tests in headed mode
 - **State Management**: Zustand
 - **Forms**: React Hook Form with Zod validation
 - **Icons**: Lucide React
-- **Development Server**: Port 3000 (localhost only)
+- **Process Manager**: PM2 (production)
+- **Git Hooks**: Husky (pre-push testing)
+- **Production Server**: Port 3000 (PM2 managed)
 
 #### Nginx Configuration
 - **Config File**: `/etc/nginx/sites-available/restaurant-daily`
@@ -77,4 +88,5 @@ npm run test:headed   # Run tests in headed mode
 - **Local Development**: http://localhost:3000
 - **Production Access**: http://4.213.183.139
 - **Mobile Testing**: Works on iPhone Safari
-- **Development Server**: Always running in background (ID: adf563)
+- **Production Server**: PM2 managed, auto-restart enabled
+- **Pre-push Hooks**: Tests, lint, and build checks before push
