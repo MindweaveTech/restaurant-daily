@@ -11,6 +11,9 @@
 - ✅ Configure PM2 for production process management
 - ✅ Add Husky pre-push hooks for quality gates
 - ✅ Complete documentation and GitHub repository setup
+- ✅ HTTPS deployment with Let's Encrypt SSL certificate
+- ✅ Custom domain setup (restaurant-daily.mindweave.tech)
+- ✅ Fix CSS loading issue on HTTPS (nginx headers + next.config.js)
 
 ## Active Tasks (Window: 5) - Phase 2: Authentication
 
@@ -79,9 +82,11 @@
 ## Memory Notes & Current Status
 
 ### Production Environment
-- **Live URL**: http://4.213.183.139 (Azure VM)
+- **Live URL**: https://restaurant-daily.mindweave.tech (HTTPS ✅)
+- **Fallback IP**: https://4.213.183.139
 - **Process Manager**: PM2 (restaurant-daily process)
-- **Web Server**: Nginx reverse proxy (port 80 → 3000)
+- **Web Server**: Nginx reverse proxy (port 443/80 → 3000)
+- **SSL Certificate**: Let's Encrypt with auto-renewal
 - **Auto-restart**: Enabled via systemd service
 - **Quality Gates**: Husky pre-push hooks (tests + lint + build)
 

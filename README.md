@@ -1,6 +1,6 @@
 # Restaurant Daily 🍽️
 
-[![App Status](https://img.shields.io/badge/Status-Live-brightgreen)](http://4.213.183.139)
+[![App Status](https://img.shields.io/badge/Status-Live-brightgreen)](https://restaurant-daily.mindweave.tech)
 [![Build](https://img.shields.io/badge/Build-Passing-brightgreen)](#)
 [![Tests](https://img.shields.io/badge/Tests-4%2F4%20Passing-brightgreen)](#testing)
 [![Version](https://img.shields.io/badge/Version-0.1.0-blue)](#)
@@ -20,9 +20,10 @@ Found a bug? Please report it through one of these channels:
 |-----------|--------|-----|
 | **Production App** | 🟢 Live | [restaurant-daily.mindweave.tech](https://restaurant-daily.mindweave.tech) |
 | **Production Server** | 🟢 PM2 Managed | http://localhost:3000 |
+| **SSL Certificate** | 🟢 Active | Let's Encrypt (Auto-renewal) |
 | **Database** | 🟡 File-based | Local JSON (planned: PostgreSQL) |
 | **Tests** | 🟢 Passing | [4/4 Playwright tests](./TEST_REPORT.md) |
-| **Nginx Proxy** | 🟢 Active | Port 80 → 3000 |
+| **Nginx Proxy** | 🟢 Active | Port 443/80 → 3000 |
 
 ---
 
@@ -146,16 +147,19 @@ src/
 ## 🌐 Deployment
 
 ### Current Setup
-- **Azure VM**: Ubuntu Linux
+- **Azure VM**: Ubuntu Linux (6.8.0-1034-azure)
 - **Public IP**: 4.213.183.139
+- **Domain**: restaurant-daily.mindweave.tech
 - **Nginx Config**: `/etc/nginx/sites-available/restaurant-daily`
 - **SSL**: ✅ Let's Encrypt (HTTPS with auto-renewal)
+- **DNS**: A record on Namecheap pointing to Azure VM
 
 ### Production Access
 - **Live App**: [restaurant-daily.mindweave.tech](https://restaurant-daily.mindweave.tech)
-- **Fallback IP**: [4.213.183.139](http://4.213.183.139)
+- **Fallback IP**: [4.213.183.139](https://4.213.183.139)
+- **HTTPS**: Force redirect from HTTP with valid SSL
 - **Mobile Friendly**: Works on iPhone Safari
-- **Performance**: Optimized with gzip compression
+- **Performance**: Optimized with gzip compression and caching headers
 
 ## 📝 Development Roadmap
 
@@ -180,7 +184,7 @@ src/
 - [ ] Dashboard analytics
 
 ### Phase 4: Polish (Future)
-- [ ] SSL/HTTPS setup
+- [x] SSL/HTTPS setup ✅
 - [ ] Database migration (PostgreSQL)
 - [ ] Real-time updates
 - [ ] Mobile app (React Native)

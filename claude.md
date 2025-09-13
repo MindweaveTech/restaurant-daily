@@ -34,7 +34,8 @@ pm2 delete restaurant-daily   # Remove from PM2
 - **Azure VM**: Ubuntu Linux (6.8.0-1034-azure)
 - **Public IP**: 4.213.183.139
 - **Internal IP**: 10.0.0.4
-- **Access URL**: http://4.213.183.139
+- **Domain**: restaurant-daily.mindweave.tech
+- **Fallback IP**: 4.213.183.139
 
 #### Application Stack
 - **Frontend**: Next.js 15.5.3 with TypeScript
@@ -49,16 +50,19 @@ pm2 delete restaurant-daily   # Remove from PM2
 #### Nginx Configuration
 - **Config File**: `/etc/nginx/sites-available/restaurant-daily`
 - **Enabled**: Symlinked to `/etc/nginx/sites-enabled/`
-- **Port**: 80 (HTTP)
+- **Ports**: 443 (HTTPS), 80 (HTTP redirect)
+- **SSL**: Let's Encrypt certificate with auto-renewal
 - **Proxy**: Forwards all traffic to localhost:3000
+- **Headers**: X-Forwarded-Proto, X-Forwarded-Host, X-Forwarded-Server
 - **Features**: Gzip compression, proper headers, WebSocket support
-- **Status**: Active and running
+- **Status**: Active with HTTPS working
 
 #### Firewall & Security
 - **UFW Status**: Active
-- **Allowed Ports**: 22 (SSH), 80 (HTTP via "Nginx Full")
-- **Azure NSG**: Configured for HTTP traffic
-- **External Access**: ✅ Working from internet
+- **Allowed Ports**: 22 (SSH), 80 (HTTP), 443 (HTTPS via "Nginx Full")
+- **SSL Certificate**: Let's Encrypt (mindweavehq@gmail.com)
+- **Azure NSG**: Configured for HTTP/HTTPS traffic
+- **External Access**: ✅ Working from internet with HTTPS
 
 #### Project Structure
 ```
@@ -86,8 +90,9 @@ pm2 delete restaurant-daily   # Remove from PM2
 
 ### Quick Access
 - **Local Development**: http://localhost:3000
-- **Production Access**: https://restaurant-daily.mindweave.tech
-- **Fallback IP**: http://4.213.183.139
-- **Mobile Testing**: Works on iPhone Safari
+- **Production Access**: https://restaurant-daily.mindweave.tech ✅ HTTPS
+- **Fallback IP**: https://4.213.183.139
+- **Mobile Testing**: Works on iPhone Safari with HTTPS
 - **Production Server**: PM2 managed, auto-restart enabled
 - **Pre-push Hooks**: Tests, lint, and build checks before push
+- **SSL Status**: Valid certificate, force HTTPS redirect, CSS loading fixed

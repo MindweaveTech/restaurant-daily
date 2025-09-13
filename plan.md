@@ -67,6 +67,9 @@ Mobile-first restaurant performance tracking app with cash management, voucher t
 5. ✅ PM2 production process management
 6. ✅ Husky pre-push hooks for quality gates
 7. ✅ Complete documentation and GitHub setup
+8. ✅ HTTPS deployment with Let's Encrypt SSL
+9. ✅ Custom domain setup (restaurant-daily.mindweave.tech)
+10. ✅ CSS loading fix for HTTPS (nginx headers + next.config.js)
 
 ### Phase 2: Authentication (NEXT)
 1. Phone number input component with validation
