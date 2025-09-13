@@ -1,36 +1,181 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Restaurant Daily 🍽️
 
-## Getting Started
+[![App Status](https://img.shields.io/badge/Status-Live-brightgreen)](http://4.213.183.139)
+[![Build](https://img.shields.io/badge/Build-Passing-brightgreen)](#)
+[![Tests](https://img.shields.io/badge/Tests-4%2F4%20Passing-brightgreen)](#testing)
+[![Version](https://img.shields.io/badge/Version-0.1.0-blue)](#)
 
-First, run the development server:
+> **Performance tracking app for restaurants** - Manage cash sessions, vouchers, and payments with mobile-first design.
 
+## 🚨 Bug Reports & Issues
+
+Found a bug? Please report it through one of these channels:
+- [GitHub Issues](https://github.com/MindweaveTech/restaurant-daily/issues) - Preferred for technical issues
+- Email: [gaurav18115@gmail.com](mailto:gaurav18115@gmail.com) - For urgent matters
+- Include steps to reproduce, expected behavior, and screenshots if applicable
+
+## 📊 App Health Status
+
+| Component | Status | URL |
+|-----------|--------|-----|
+| **Production App** | 🟢 Live | [http://4.213.183.139](http://4.213.183.139) |
+| **Development Server** | 🟢 Running | http://localhost:3000 |
+| **Database** | 🟡 File-based | Local JSON (planned: PostgreSQL) |
+| **Tests** | 🟢 Passing | 4/4 Playwright tests |
+| **Nginx Proxy** | 🟢 Active | Port 80 → 3000 |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+- Git
+
+### Development Setup
 ```bash
+# Clone the repository
+git clone https://github.com/MindweaveTech/restaurant-daily.git
+cd restaurant-daily
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Open browser to http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Testing
+```bash
+# Run all tests
+npm run test
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Run tests with UI
+npm run test:ui
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Run tests in headed mode
+npm run test:headed
+```
 
-## Learn More
+## 🏗️ Project Architecture
 
-To learn more about Next.js, take a look at the following resources:
+### Tech Stack
+- **Frontend**: Next.js 15.5.3 with TypeScript
+- **Styling**: Tailwind CSS (mobile-first)
+- **State**: Zustand for global state management
+- **Forms**: React Hook Form + Zod validation
+- **Icons**: Lucide React
+- **Testing**: Playwright
+- **Deployment**: Azure VM with nginx reverse proxy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Core Features
+- 📱 **Mobile-First Design** - Optimized for phones and tablets
+- 🔐 **Authentication** - Phone → OTP → Role Selection
+- 💰 **Cash Management** - Daily session tracking
+- 📝 **Voucher System** - Petty cash and expense tracking
+- ⚡ **Payment Monitoring** - Electricity and vendor payments
+- 👥 **Role-Based Access** - Admin and Team Member roles
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📚 Project Glossary
 
-## Deploy on Vercel
+### Key Terms
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Cash Session** - A work period where cash transactions are tracked from opening to closing balance
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Petty Voucher** - Small expense receipts that need approval and categorization
+
+**Role-Based Access** - Different permission levels:
+- **Admin**: Full access, reporting, user management
+- **Team Member**: Basic tracking, limited reports
+
+**OTP** - One-Time Password sent via SMS for authentication
+
+**Nginx Proxy** - Web server that forwards external requests to the Next.js app
+
+### File Structure
+```
+src/
+├── app/                 # Next.js app router pages
+├── components/          # React components
+│   ├── ui/             # Reusable UI components
+│   ├── auth/           # Authentication components
+│   ├── dashboard/      # Dashboard components
+│   ├── cash/           # Cash management
+│   ├── vouchers/       # Voucher tracking
+│   └── payments/       # Payment monitoring
+├── lib/                # Utility functions
+├── store/              # Zustand state management
+├── types/              # TypeScript type definitions
+└── hooks/              # Custom React hooks
+```
+
+## 🔧 Development Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run test` | Run Playwright tests |
+| `npm run test:ui` | Interactive test runner |
+
+## 🌐 Deployment
+
+### Current Setup
+- **Azure VM**: Ubuntu Linux
+- **Public IP**: 4.213.183.139
+- **Nginx Config**: `/etc/nginx/sites-available/restaurant-daily`
+- **SSL**: Not yet configured (HTTP only)
+
+### Production Access
+- **Live App**: [http://4.213.183.139](http://4.213.183.139)
+- **Mobile Friendly**: Works on iPhone Safari
+- **Performance**: Optimized with gzip compression
+
+## 📝 Development Roadmap
+
+### Phase 1: Foundation ✅
+- [x] Project setup and basic homepage
+- [x] Mobile-responsive design
+- [x] Testing framework
+- [x] Deployment infrastructure
+
+### Phase 2: Authentication (Next)
+- [ ] Phone number input component
+- [ ] OTP verification system
+- [ ] Role selection interface
+- [ ] JWT token management
+
+### Phase 3: Core Features (Planned)
+- [ ] Cash session management
+- [ ] Petty voucher tracking
+- [ ] Payment monitoring
+- [ ] Dashboard analytics
+
+### Phase 4: Polish (Future)
+- [ ] SSL/HTTPS setup
+- [ ] Database migration (PostgreSQL)
+- [ ] Real-time updates
+- [ ] Mobile app (React Native)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## 📄 License
+
+This project is proprietary software owned by MindweaveTech.
+
+---
+
+**Built with ❤️ by [MindweaveTech](https://github.com/MindweaveTech)**
+
+*Last updated: 2025-09-13*
