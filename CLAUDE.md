@@ -39,6 +39,8 @@ pm2 delete restaurant-daily   # Remove from PM2
 
 #### Application Stack
 - **Frontend**: Next.js 15.5.3 with TypeScript
+- **Database**: Supabase (PostgreSQL with real-time features)
+- **Secrets Management**: HashiCorp Vault v1.20.3
 - **Styling**: Tailwind CSS (mobile-first responsive)
 - **State Management**: Zustand
 - **Forms**: React Hook Form with Zod validation
@@ -96,3 +98,47 @@ pm2 delete restaurant-daily   # Remove from PM2
 - **Production Server**: PM2 managed, auto-restart enabled
 - **Pre-push Hooks**: Tests, lint, and build checks before push
 - **SSL Status**: Valid certificate, force HTTPS redirect, CSS loading fixed
+
+### Secrets Management & Database
+
+#### HashiCorp Vault Configuration
+```bash
+# Start Vault in development mode
+vault server -dev
+
+# Set environment variables
+export VAULT_ADDR='http://127.0.0.1:8200'
+export VAULT_TOKEN='YOUR_VAULT_DEV_TOKEN'  # Replace with your dev token
+
+# Vault commands
+vault status                    # Check Vault status
+vault kv get secret/supabase   # Get Supabase secrets
+vault kv get secret/jwt        # Get JWT secrets
+```
+
+#### Supabase Configuration
+- **Project Name**: Restaurant Daily
+- **Project ID**: hukaqbgfmerutzhtchiu
+- **Project URL**: https://hukaqbgfmerutzhtchiu.supabase.co
+- **Secrets Location**: Stored in Vault at `secret/supabase`
+
+#### Database Schema Planning
+- **Users**: Phone-based authentication with roles (admin/team)
+- **Cash Sessions**: Opening/closing balance tracking
+- **Petty Vouchers**: Expense tracking with categories
+- **Electricity Payments**: Payment monitoring and history
+- **Audit Logs**: Full activity tracking for compliance
+
+#### Required Supabase Secrets (stored in Vault)
+```bash
+# Update these with your actual Supabase credentials
+vault kv put secret/supabase \
+  anon_key="YOUR_SUPABASE_ANON_KEY" \
+  service_role_key="YOUR_SUPABASE_SERVICE_ROLE_KEY" \
+  database_url="YOUR_SUPABASE_DATABASE_URL"
+
+# JWT secrets for authentication
+vault kv put secret/jwt \
+  access_token_secret="YOUR_STRONG_JWT_SECRET" \
+  refresh_token_secret="YOUR_STRONG_REFRESH_SECRET"
+```

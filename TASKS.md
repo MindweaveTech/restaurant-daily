@@ -14,14 +14,17 @@
 - ✅ HTTPS deployment with Let's Encrypt SSL certificate
 - ✅ Custom domain setup (restaurant-daily.mindweave.tech)
 - ✅ Fix CSS loading issue on HTTPS (nginx headers + next.config.js)
+- ✅ Install HashiCorp Vault for secrets management
+- ✅ Set up Supabase project for database (PostgreSQL)
 
 ## Active Tasks (Window: 5) - Phase 2: Authentication
 
 ### 1. [NEXT] Design authentication flow architecture
 - Plan phone number validation system
 - Design OTP delivery mechanism
-- Plan JWT token structure and storage
+- Plan JWT token structure and storage (using Vault secrets)
 - Design role-based access control system
+- Create Supabase database schema for users and sessions
 
 ### 2. [PENDING] Create phone number input component
 - Build responsive phone input with country codes
@@ -93,6 +96,8 @@
 ### Tech Stack Decisions
 - **Next.js 15.5.3**: Server-side rendering + static optimization
 - **TypeScript**: Type safety across the application
+- **Supabase**: PostgreSQL database with real-time features
+- **HashiCorp Vault**: Secure secrets and configuration management
 - **Tailwind CSS**: Mobile-first responsive design
 - **PM2**: Production process management and monitoring
 - **Playwright**: End-to-end testing (4/4 tests passing)
