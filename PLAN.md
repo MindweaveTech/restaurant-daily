@@ -4,12 +4,14 @@
 Mobile-first restaurant performance tracking app with cash management, voucher tracking, and payment monitoring.
 
 ## Architecture
-- **Frontend**: Next.js with React
+- **Frontend**: Next.js 15.5.3 with React 18
 - **Styling**: Tailwind CSS (mobile-first)
-- **State**: React Context/Zustand
-- **Auth**: JWT with phone/OTP
-- **Database**: JSON files initially (can upgrade to PostgreSQL/MongoDB)
-- **Deployment**: Server with nginx reverse proxy
+- **State**: Zustand state management
+- **Auth**: JWT with phone/WhatsApp OTP (production ready)
+- **Database**: Supabase (PostgreSQL with real-time features)
+- **Secrets**: HashiCorp Vault for secure credential management
+- **Messaging**: Twilio WhatsApp Business API (with SMS fallback)
+- **Deployment**: Azure VM with nginx reverse proxy + PM2
 
 ## Core Features
 
@@ -48,12 +50,17 @@ Mobile-first restaurant performance tracking app with cash management, voucher t
 - **Team Member**: Basic tracking, limited reports
 
 ## Technical Stack
-- Next.js 14 (App Router)
+- Next.js 15.5.3 (App Router)
 - React 18
 - TypeScript
 - Tailwind CSS
-- Zustand (state)
-- React Hook Form
+- Zustand (state management)
+- React Hook Form + Zod validation
+- Supabase (PostgreSQL database)
+- HashiCorp Vault (secrets management)
+- Twilio (WhatsApp/SMS messaging)
+- PM2 (production process management)
+- libphonenumber-js (phone validation)
 - Date-fns
 - Recharts (analytics)
 
@@ -70,13 +77,21 @@ Mobile-first restaurant performance tracking app with cash management, voucher t
 8. ✅ HTTPS deployment with Let's Encrypt SSL
 9. ✅ Custom domain setup (restaurant-daily.mindweave.tech)
 10. ✅ CSS loading fix for HTTPS (nginx headers + next.config.js)
+11. ✅ HashiCorp Vault setup for secrets management
+12. ✅ Supabase database setup and Vault integration
+13. ✅ Twilio WhatsApp integration (production ready)
+14. ✅ Authentication architecture design
+15. ✅ Complete OTP messaging system with rate limiting
 
-### Phase 2: Authentication (NEXT)
+### Phase 2: Authentication Frontend (CURRENT)
 1. Phone number input component with validation
-2. OTP verification system integration
-3. Role selection interface (Admin/Team Member)
-4. JWT token management and storage
+2. OTP verification interface (6-digit input with timer)
+3. Role selection screen (Admin/Team Member)
+4. JWT token management and secure storage
 5. Protected routes and navigation guards
+6. Supabase database schema implementation
+
+**Backend Complete**: ✅ WhatsApp OTP, phone validation, API routes, rate limiting
 
 ### Phase 3: Core Dashboard & Navigation
 1. Main dashboard layout with metrics
@@ -100,8 +115,10 @@ Mobile-first restaurant performance tracking app with cash management, voucher t
 5. Vendor management and due date alerts
 
 ### Phase 6: Polish & Advanced Features
-1. SSL/HTTPS setup for production
-2. Database migration to PostgreSQL
-3. Real-time notifications
+1. ✅ SSL/HTTPS setup for production
+2. ✅ Database migration to PostgreSQL (Supabase)
+3. Real-time notifications using Supabase realtime
 4. Advanced reporting and analytics
 5. Mobile app version (React Native)
+6. SMS fallback after Twilio account upgrade
+7. Advanced security monitoring and audit logs

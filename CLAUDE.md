@@ -41,6 +41,8 @@ pm2 delete restaurant-daily   # Remove from PM2
 - **Frontend**: Next.js 15.5.3 with TypeScript
 - **Database**: Supabase (PostgreSQL with real-time features)
 - **Secrets Management**: HashiCorp Vault v1.20.3
+- **Authentication**: WhatsApp/SMS OTP via Twilio (production ready)
+- **Messaging**: Twilio WhatsApp Business API (sandbox mode)
 - **Styling**: Tailwind CSS (mobile-first responsive)
 - **State Management**: Zustand
 - **Forms**: React Hook Form with Zod validation
@@ -71,24 +73,34 @@ pm2 delete restaurant-daily   # Remove from PM2
 /home/grao/Projects/restaurant-daily/
 ├── src/
 │   ├── app/
+│   │   └── api/auth/ (OTP request/verify, test messaging)
 │   ├── components/ (ui, auth, dashboard, cash, vouchers, payments)
-│   ├── lib/ (auth, api, utils)
+│   ├── lib/
+│   │   ├── messaging/ (twilio-client, phone-validator, otp-service)
+│   │   ├── auth/
+│   │   ├── api/
+│   │   └── utils/
 │   ├── store/
 │   ├── types/
 │   └── hooks/
 ├── CLAUDE.md (this file)
 ├── PLAN.md (project roadmap)
 ├── TASKS.md (task management - window size: 5)
+├── AUTH_ARCHITECTURE.md (authentication system design)
+├── TWILIO_INTEGRATION_PLAN.md (messaging integration guide)
+├── SMS_UPGRADE_GUIDE.md (sandbox to production upgrade)
+├── test-twilio-messaging.mjs (comprehensive messaging tests)
 └── package.json
 ```
 
 ### Project Context
 - Next.js React app for restaurant performance tracking
 - Mobile-first responsive design (optimized for iPhone/tablets)
-- Authentication: phone → OTP → role selection
+- Authentication: phone → WhatsApp OTP → role selection (production ready)
 - Features: cash sessions, petty vouchers, electricity payments
 - Role-based access (admin/team members)
 - Real-time updates and mobile-friendly interface
+- Secure messaging via Twilio WhatsApp Business API
 
 ### Quick Access
 - **Local Development**: http://localhost:3000
@@ -102,19 +114,52 @@ pm2 delete restaurant-daily   # Remove from PM2
 ### Secrets Management & Database
 
 #### HashiCorp Vault Configuration
+
+##### Initial Setup (One-time)
 ```bash
 # Start Vault in development mode
 vault server -dev
 
-# Set environment variables
-export VAULT_ADDR='http://127.0.0.1:8200'
-export VAULT_TOKEN='YOUR_VAULT_DEV_TOKEN'  # Replace with your dev token
+# Note the Root Token from the output (format: hvs.XXXXXXXXX)
+# Example output:
+# Root Token: hvs.YOUR_GENERATED_TOKEN_HERE
+```
 
-# Vault commands
+##### Development Token Management
+```bash
+# Option 1: Save to local environment file (RECOMMENDED)
+echo "VAULT_TOKEN=hvs.YOUR_VAULT_DEV_TOKEN" >> .env.local
+echo ".env.local" >> .gitignore
+
+# Option 2: Save to shell profile (persistent across sessions)
+echo "export VAULT_TOKEN=hvs.YOUR_VAULT_DEV_TOKEN" >> ~/.bashrc
+source ~/.bashrc
+
+# Option 3: Set for current session only
+export VAULT_ADDR='http://127.0.0.1:8200'
+export VAULT_TOKEN='hvs.YOUR_VAULT_DEV_TOKEN'
+```
+
+##### Vault Commands
+```bash
 vault status                    # Check Vault status
 vault kv get secret/supabase   # Get Supabase secrets
 vault kv get secret/jwt        # Get JWT secrets
+vault kv list secret/          # List all secrets
+
+# Test database connection (using stored credentials)
+VAULT_TOKEN='your_token' node test-db-connection.mjs
+
+# Test Twilio messaging integration
+node test-twilio-messaging.mjs
 ```
+
+##### 🔐 Token Security Notes
+- **Development tokens** are generated each time Vault dev server starts
+- **Never commit tokens** to git repositories (GitHub secret scanning will block)
+- **Tokens expire** when Vault dev server stops/restarts
+- **Current dev token**: `hvs.YOUR_VAULT_DEV_TOKEN` (save locally!)
+- **Production**: Use Vault auth methods (AWS IAM, Azure AD, etc.)
 
 #### Supabase Configuration
 - **Project Name**: Restaurant Daily
@@ -142,3 +187,72 @@ vault kv put secret/jwt \
   access_token_secret="YOUR_STRONG_JWT_SECRET" \
   refresh_token_secret="YOUR_STRONG_REFRESH_SECRET"
 ```
+
+### 📱 Twilio WhatsApp Integration (Production Ready)
+
+#### Current Status: ✅ WORKING
+- **WhatsApp Number**: `+14155238886` (sandbox mode)
+- **Account**: `ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
+- **Delivery Method**: WhatsApp-primary with SMS fallback (when upgraded)
+- **Cost**: ₹0.35/message (WhatsApp), no base costs
+- **Coverage**: Global (perfect for Indian restaurant market)
+
+#### Quick Test Commands
+```bash
+# Test WhatsApp OTP delivery
+curl -X POST https://restaurant-daily.mindweave.tech/api/auth/request-otp \
+  -H "Content-Type: application/json" \
+  -d '{"phoneNumber": "+918826175074", "preferredMethod": "whatsapp"}'
+
+# Run full integration test suite
+node test-twilio-messaging.mjs
+
+# Check Twilio connection
+curl -X POST https://restaurant-daily.mindweave.tech/api/auth/test-messaging \
+  -H "Content-Type: application/json" \
+  -d '{"testType": "connection"}'
+```
+
+#### Vault Configuration
+```bash
+# Twilio credentials (stored securely in Vault)
+vault kv put secret/sms \
+  provider="twilio" \
+  account_sid="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+  twilio_auth_token="YOUR_TWILIO_AUTH_TOKEN" \
+  from_number="+14155238886" \
+  whatsapp_number="whatsapp:+14155238886" \
+  content_sid="HXb5b62575e6e4ff6129ad7c8efe1f983e" \
+  webhook_url="https://restaurant-daily.mindweave.tech/api/sms/webhook"
+
+# OTP configuration
+vault kv put secret/otp \
+  length="6" \
+  expiry_minutes="5" \
+  max_attempts="3" \
+  rate_limit_per_hour="3" \
+  cleanup_interval_hours="24"
+```
+
+#### API Endpoints
+- **Request OTP**: `POST /api/auth/request-otp`
+- **Verify OTP**: `POST /api/auth/verify-otp`
+- **Resend OTP**: `POST /api/auth/resend-otp`
+- **Test Messaging**: `POST /api/auth/test-messaging`
+
+#### SMS Upgrade Path
+When ready to upgrade from sandbox to full SMS:
+1. Purchase Twilio phone number (₹70-150/month)
+2. Update `from_number` in Vault
+3. System automatically enables SMS fallback
+4. See `SMS_UPGRADE_GUIDE.md` for details
+
+#### Integration Features
+- ✅ Phone number validation (E.164 format)
+- ✅ WhatsApp rich templates with branding
+- ✅ Rate limiting (3 OTPs per hour)
+- ✅ OTP expiration (5 minutes)
+- ✅ Comprehensive error handling
+- ✅ Audit logging
+- ✅ Cost optimization (WhatsApp-primary)
+- ✅ Production-ready security
