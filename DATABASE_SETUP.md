@@ -18,11 +18,19 @@ This project uses Supabase (PostgreSQL) for data persistence with Row Level Secu
    - `anon` (public) key
    - `service_role` (secret) key
 
-### 3. Configure Environment Variables
-Update `.env.local` with your Supabase credentials:
+### 3. Configure Secrets Management
+The project uses hybrid secrets management (Vault-first with environment fallback):
 
+**Option A: HashiCorp Vault (Recommended for Production)**
 ```bash
-# Supabase Configuration
+# Store secrets in Vault (credentials already configured)
+vault kv get secret/supabase
+# Contains: url, anon_key, service_role_key, database_url
+```
+
+**Option B: Environment Variables (Development Fallback)**
+```bash
+# Add to .env.local for development when Vault unavailable
 SUPABASE_URL=https://hukaqbgfmerutzhtchiu.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here

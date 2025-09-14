@@ -2,7 +2,7 @@
 
 [![App Status](https://img.shields.io/badge/Status-Live-brightgreen)](https://restaurant-daily.mindweave.tech)
 [![Build](https://img.shields.io/badge/Build-Passing-brightgreen)](#)
-[![Tests](https://img.shields.io/badge/Tests-4%2F4%20Passing-brightgreen)](#testing)
+[![Tests](https://img.shields.io/badge/Tests-14%2F14%20Passing-brightgreen)](#testing)
 [![Version](https://img.shields.io/badge/Version-0.1.0-blue)](#)
 
 > **Performance tracking app for restaurants** - Manage cash sessions, vouchers, and payments with mobile-first design.
@@ -21,8 +21,9 @@ Found a bug? Please report it through one of these channels:
 | **Production App** | 🟢 Live | [restaurant-daily.mindweave.tech](https://restaurant-daily.mindweave.tech) |
 | **Production Server** | 🟢 PM2 Managed | http://localhost:3000 |
 | **SSL Certificate** | 🟢 Active | Let's Encrypt (Auto-renewal) |
-| **Database** | 🟡 File-based | Local JSON (planned: PostgreSQL) |
+| **Database** | 🟢 PostgreSQL | Supabase with Row Level Security |
 | **Tests** | 🟢 Passing | [14/14 Playwright tests](./TEST_REPORT.md) |
+| **Secrets Management** | 🟢 Hybrid | Vault + Environment Fallback |
 | **Nginx Proxy** | 🟢 Active | Port 443/80 → 3000 |
 
 ---
@@ -72,23 +73,29 @@ open docs/reports/latest-test-report/index.html
 ## 🏗️ Project Architecture
 
 ### Tech Stack
-- **Frontend**: Next.js 15.5.3 with TypeScript
-- **Styling**: Tailwind CSS (mobile-first)
+- **Frontend**: Next.js 15.5.3 with TypeScript & App Router
+- **Database**: Supabase (PostgreSQL with real-time features)
+- **Authentication**: JWT with WhatsApp/SMS OTP via Twilio
+- **Secrets**: HashiCorp Vault + Environment fallback
+- **Styling**: Tailwind CSS (mobile-first responsive design)
 - **State**: Zustand for global state management
 - **Forms**: React Hook Form + Zod validation
 - **Icons**: Lucide React
-- **Testing**: Playwright
+- **Testing**: Playwright (14 tests across mobile + desktop)
 - **Process Manager**: PM2 for production
-- **Git Hooks**: Husky (pre-push validation)
+- **Git Hooks**: Husky (pre-push validation with quality gates)
 - **Deployment**: Azure VM with nginx reverse proxy
 
 ### Core Features
-- 📱 **Mobile-First Design** - Optimized for phones and tablets
-- 🔐 **Authentication** ✅ - Phone → WhatsApp OTP → Dashboard (LIVE)
-- 💰 **Cash Management** - Daily session tracking (planned)
-- 📝 **Voucher System** - Petty cash and expense tracking (planned)
-- ⚡ **Payment Monitoring** - Electricity and vendor payments (planned)
-- 👥 **Role-Based Access** - Admin and Team Member roles (planned)
+- 📱 **Mobile-First Design** ✅ - Optimized for phones and tablets (LIVE)
+- 🔐 **Authentication System** ✅ - Phone → WhatsApp OTP → Role Selection (LIVE)
+- 🏪 **Restaurant Management** ✅ - Complete setup wizard and admin dashboard (LIVE)
+- 👥 **Role-Based Access** ✅ - Restaurant Admin vs Staff Member roles (LIVE)
+- 🗄️ **Multi-Restaurant Support** ✅ - Scalable architecture with data isolation (LIVE)
+- 🔒 **Security & Permissions** ✅ - JWT tokens with restaurant context + RLS (LIVE)
+- 💰 **Cash Management** - Daily session tracking (next phase)
+- 📝 **Voucher System** - Petty cash and expense tracking (next phase)
+- ⚡ **Payment Monitoring** - Electricity and vendor payments (next phase)
 
 ## 📚 Project Glossary
 
@@ -177,17 +184,30 @@ src/
 - [x] JWT token management and secure authentication
 - [x] Complete authentication flow (phone → OTP → dashboard)
 
-### Phase 3: Core Features (Planned)
+### Phase 3: Restaurant Management ✅ COMPLETED
+- [x] Role selection interface (Restaurant Admin vs Staff Member)
+- [x] Restaurant setup wizard with 3-step onboarding
+- [x] Admin dashboard with management features
+- [x] Staff welcome and onboarding flow
+- [x] Database integration with Supabase PostgreSQL
+- [x] Multi-restaurant architecture with data isolation
+- [x] Hybrid secrets management (Vault + fallback)
+
+### Phase 4: Core Business Features (Current)
+- [ ] Staff invitation system via WhatsApp
+- [ ] Staff management dashboard
 - [ ] Cash session management
 - [ ] Petty voucher tracking
 - [ ] Payment monitoring
-- [ ] Dashboard analytics
+- [ ] Business analytics and reporting
 
-### Phase 4: Polish (Future)
+### Phase 5: Advanced Features (Future)
 - [x] SSL/HTTPS setup ✅
-- [ ] Database migration (PostgreSQL)
-- [ ] Real-time updates
+- [x] Database migration (PostgreSQL) ✅
+- [ ] Real-time notifications (Supabase realtime)
+- [ ] Advanced reporting and analytics
 - [ ] Mobile app (React Native)
+- [ ] SMS fallback (Twilio upgrade)
 
 ## 🤝 Contributing
 
@@ -205,4 +225,4 @@ This project is proprietary software owned by MindweaveTech.
 
 **Built with ❤️ by [MindweaveTech](https://github.com/MindweaveTech)**
 
-*Last updated: 2025-09-13*
+*Last updated: 2025-09-14 | Phase 3 Complete - Restaurant Management System Live*
