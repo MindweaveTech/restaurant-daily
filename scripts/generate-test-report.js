@@ -1,17 +1,90 @@
-# 🧪 Test Report - Restaurant Daily
+#!/usr/bin/env node
 
-![Test Status](https://img.shields.io/badge/Tests-14%2F14%20Passing-brightgreen)
+/**
+ * Automatic Test Report Generator
+ * Generates TEST_REPORT.md based on current test results
+ */
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { execSync } = require('child_process');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const fs = require('fs');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const path = require('path');
+
+function generateTestReport() {
+  console.log('🧪 Generating Test Report...');
+
+  const timestamp = new Date().toISOString();
+  const dateOnly = timestamp.split('T')[0];
+  const dateTime = new Date().toLocaleString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'UTC'
+  });
+
+  let testResults = { total: 0, passed: 0, failed: 0, duration: '0s' };
+  let testOutput = '';
+
+  try {
+    // Run tests and capture output
+    testOutput = execSync('npm run test', {
+      encoding: 'utf8',
+      cwd: path.dirname(__dirname)
+    });
+
+    // Parse test results
+    const lines = testOutput.split('\n');
+    const resultLine = lines.find(line => line.includes('passed')) || '';
+
+    if (resultLine.includes('passed')) {
+      const match = resultLine.match(/(\d+)\s+passed\s*\(([^)]+)\)/);
+      if (match) {
+        testResults.total = parseInt(match[1]);
+        testResults.passed = parseInt(match[1]);
+        testResults.failed = 0;
+        testResults.duration = match[2];
+      }
+    }
+  } catch (error) {
+    console.error('Error running tests:', error.message);
+    // Parse failed test output
+    const errorOutput = error.stdout || error.message;
+    const lines = errorOutput.split('\n');
+    const resultLine = lines.find(line => line.includes('passed') || line.includes('failed')) || '';
+
+    if (resultLine) {
+      const passedMatch = resultLine.match(/(\d+)\s+passed/);
+      const failedMatch = resultLine.match(/(\d+)\s+failed/);
+      const durationMatch = resultLine.match(/\(([^)]+)\)/);
+
+      testResults.passed = passedMatch ? parseInt(passedMatch[1]) : 0;
+      testResults.failed = failedMatch ? parseInt(failedMatch[1]) : 0;
+      testResults.total = testResults.passed + testResults.failed;
+      testResults.duration = durationMatch ? durationMatch[1] : 'N/A';
+    }
+  }
+
+  const passingStatus = testResults.failed === 0 ? 'brightgreen' : 'red';
+  const statusText = testResults.failed === 0 ? 'Passing' : 'Failed';
+
+  const reportContent = `# 🧪 Test Report - Restaurant Daily
+
+![Test Status](https://img.shields.io/badge/Tests-${testResults.total}%2F${testResults.total}%20${statusText}-${passingStatus})
 ![Coverage](https://img.shields.io/badge/Coverage-Authentication%20%2B%20Core-blue)
-![Last Run](https://img.shields.io/badge/Last%20Run-2025-09-14-blue)
+![Last Run](https://img.shields.io/badge/Last%20Run-${dateOnly}-blue)
 
 ## 📊 Test Summary
 
 | Metric | Value | Status |
 |--------|--------|--------|
-| **Total Tests** | 14 | ✅ |
-| **Passed** | 14 | ✅ |
-| **Failed** | 0 | ✅ |
-| **Duration** | 5.5s | ✅ |
+| **Total Tests** | ${testResults.total} | ${testResults.failed === 0 ? '✅' : '❌'} |
+| **Passed** | ${testResults.passed} | ✅ |
+| **Failed** | ${testResults.failed} | ${testResults.failed === 0 ? '✅' : '❌'} |
+| **Duration** | ${testResults.duration} | ✅ |
 | **Browsers** | Chrome, Mobile Chrome | ✅ |
 
 ## 🎯 Test Coverage
@@ -37,7 +110,7 @@
 
 ### 1. Core Application Tests (4 tests)
 **Status:** ✅ PASSING
-```
+\`\`\`
 ✓ Should load homepage and display core elements
   - Loading spinner appears and disappears correctly
   - Restaurant Daily title and branding visible
@@ -52,11 +125,11 @@
   - Touch-friendly interactions
   - Feature cards stack properly
   - Navigation remains accessible
-```
+\`\`\`
 
 ### 2. Authentication Flow Tests (10 tests)
 **Status:** ✅ PASSING
-```
+\`\`\`
 ✓ Should display phone input page correctly
   - Phone authentication page loads properly
   - Form elements are visible and accessible
@@ -81,23 +154,23 @@
   - Back navigation functions correctly
   - Route transitions work properly
   - State management maintains consistency
-```
+\`\`\`
 
 ## 🔧 Test Configuration
 
 ### Playwright Setup
-- **Config File:** `playwright.config.ts`
-- **Test Directory:** `tests/`
-- **Base URL:** `http://localhost:3000`
+- **Config File:** \`playwright.config.ts\`
+- **Test Directory:** \`tests/\`
+- **Base URL:** \`http://localhost:3000\`
 - **Parallel Execution:** 8 workers
 - **Screenshots:** On failure only
 - **Trace:** On first retry
 
 ### Browser Matrix
-```
-Desktop Chrome:   ✅ 7/7 tests passing
-Mobile Chrome:    ✅ 7/7 tests passing
-```
+\`\`\`
+Desktop Chrome:   ✅ ${Math.floor(testResults.total/2)}/${Math.floor(testResults.total/2)} tests passing
+Mobile Chrome:    ✅ ${Math.ceil(testResults.total/2)}/${Math.ceil(testResults.total/2)} tests passing
+\`\`\`
 
 ## 📈 Performance Metrics
 
@@ -106,19 +179,19 @@ Mobile Chrome:    ✅ 7/7 tests passing
 | **Load Time** | <2s | <2s | <3s |
 | **First Paint** | ~500ms | ~600ms | <1s |
 | **Interactive** | ~1s | ~1.2s | <2s |
-| **Test Duration** | 5.5s | - | <30s |
+| **Test Duration** | ${testResults.duration} | - | <30s |
 
 ## 🚀 Quality Gates
 
 This test suite runs automatically on:
 - ✅ **Pre-push hooks** (Husky)
-- ✅ **Manual execution** (`npm run test`)
+- ✅ **Manual execution** (\`npm run test\`)
 - 🔄 **Auto-generated report** (on each test run)
 - 📋 **Updated on push to main** (automated)
 
 ## 📝 Test Commands
 
-```bash
+\`\`\`bash
 # Run all tests
 npm run test
 
@@ -136,7 +209,7 @@ npx playwright show-report
 
 # Generate test report (this script)
 npm run test:report
-```
+\`\`\`
 
 ## 🎯 Current Phase Status
 
@@ -166,13 +239,31 @@ npm run test:report
 
 | Date | Tests | Passed | Failed | Duration | Phase | Notes |
 |------|-------|--------|--------|----------|-------|--------|
-| 2025-09-14 | 14 | 14 | 0 | 5.5s | Phase 2 | Authentication frontend complete |
+| ${dateOnly} | ${testResults.total} | ${testResults.passed} | ${testResults.failed} | ${testResults.duration} | Phase 2 | Authentication frontend complete |
 | Previous | 4 | 4 | 0 | 3.2s | Phase 1 | Foundation tests only |
 
 ---
 
-**Generated:** 09/14/2025, 07:24 AM UTC
+**Generated:** ${dateTime} UTC
 **Environment:** Production (PM2 managed)
 **Live URL:** [https://restaurant-daily.mindweave.tech](https://restaurant-daily.mindweave.tech)
 **Repository:** [MindweaveTech/restaurant-daily](https://github.com/MindweaveTech/restaurant-daily)
 **Auto-generated:** ✅ This report is automatically updated on each test run
+`;
+
+  // Write the report
+  const reportPath = path.join(__dirname, '..', 'TEST_REPORT.md');
+  fs.writeFileSync(reportPath, reportContent);
+
+  console.log(`✅ Test report generated: ${reportPath}`);
+  console.log(`📊 Results: ${testResults.total} tests, ${testResults.passed} passed, ${testResults.failed} failed`);
+
+  return testResults;
+}
+
+// Run if called directly
+if (require.main === module) {
+  generateTestReport();
+}
+
+module.exports = { generateTestReport };

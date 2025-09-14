@@ -1,6 +1,9 @@
 echo "🧪 Running tests before push..."
 npm run test
 
+echo "📊 Generating test report..."
+npm run test:report
+
 echo "🔍 Running lint check..."
 npm run lint
 

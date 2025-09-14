@@ -37,37 +37,37 @@
 - ✅ Implement rate limiting and security features
 - ✅ Create success dashboard with authentication confirmation
 
-## Active Tasks (Window: 5) - Phase 3: Core Dashboard
+## Active Tasks (Window: 5) - Phase 3: Restaurant Management System
 
-### 1. [NEXT] Design role selection interface
-- Create admin vs team member selection screen
-- Add role-specific onboarding flow
-- Update JWT tokens with selected roles
-- Design role-based navigation structure
+### 1. [NEXT] Design restaurant admin role selection interface
+- Create restaurant admin vs staff member selection screen
+- Add restaurant setup onboarding flow for new admins
+- Update JWT tokens with restaurant ID and enhanced roles
+- Design role-based navigation structure (admin/staff permissions)
 
-### 2. [PENDING] Build main dashboard layout
-- Create navigation menu with role-based visibility
-- Add quick action buttons and shortcuts
-- Implement responsive dashboard grid
-- Add performance metrics overview
+### 2. [PENDING] Build restaurant profile management
+- Create restaurant setup form (name, address, Google Maps link)
+- Add restaurant profile editing interface
+- Implement restaurant settings management
+- Add logo/photo upload functionality
 
-### 3. [PENDING] Implement user management
-- Create user profile management
-- Add logout and session management
-- Build protected route components
-- Add authentication guards
+### 3. [PENDING] Implement staff invitation and management system
+- Build staff invitation flow via WhatsApp
+- Create staff management dashboard for restaurant admins
+- Add role assignment and permissions management
+- Implement staff onboarding with restaurant auto-assignment
 
-### 4. [PENDING] Set up Supabase database schema
-- Design users table with phone/role columns
-- Create sessions and audit_logs tables
-- Implement RLS policies for security
-- Add database migration scripts
+### 4. [PENDING] Set up enhanced database schema for multi-restaurant
+- Design restaurants table with admin relationships
+- Create staff_members table with restaurant associations
+- Update users table with restaurant_id foreign key
+- Implement RLS policies for restaurant data isolation
 
-### 5. [PENDING] Add navigation and routing
-- Implement protected routes
-- Create navigation context/store
-- Add breadcrumb navigation
-- Build mobile-friendly menu system
+### 5. [PENDING] Build role-based navigation and permissions
+- Implement restaurant-specific route protection
+- Create admin-only sections (staff management, restaurant settings)
+- Add staff-only operational features (cash sessions, vouchers)
+- Build responsive navigation with role-based menu items
 
 ## Backlog (Moved to Plan)
 
@@ -138,15 +138,25 @@
 - **Phone-based**: Primary authentication method (E.164 validation)
 - **WhatsApp OTP**: Primary delivery via Twilio (sandbox: +14155238886)
 - **SMS Fallback**: Available after Twilio account upgrade
-- **JWT Tokens**: Secure session management (secrets from Vault)
-- **Role-based Access**: Admin vs Team Member permissions
+- **JWT Tokens**: Secure session management with restaurant context (secrets from Vault)
+- **Enhanced Role System**: Restaurant Admin, Staff Member permissions
+- **Multi-restaurant Support**: Data isolation per restaurant via RLS policies
 - **Rate Limiting**: 3 OTP requests per hour per number
 - **Security**: 5-minute OTP expiry, crypto-secure generation
 - **Mobile-first**: Optimized for restaurant staff using phones/tablets
 - **Production Ready**: WhatsApp integration working globally
 
+### Restaurant Management Features (New) 🆕
+- **Restaurant Admin Role**: Full restaurant management capabilities
+- **Restaurant Profile**: Name, address, Google Maps integration
+- **Staff Invitation System**: WhatsApp-based staff onboarding
+- **Role-based Permissions**: Admin vs Staff feature access
+- **Multi-restaurant Architecture**: Scalable for restaurant chains
+- **Data Isolation**: Restaurant-specific data security via RLS
+
 ### Current Development Focus
 - **Phase 1**: ✅ Complete (Foundation + Deployment + Authentication Backend)
-- **Phase 2**: 🎯 Current (Authentication Frontend Components)
+- **Phase 2**: ✅ Complete (Authentication Frontend Components)
+- **Phase 3**: 🎯 Current (Restaurant Management System)
 - **Repository**: https://github.com/MindweaveTech/restaurant-daily
 - **Task Window**: 5 active tasks maximum for focused development

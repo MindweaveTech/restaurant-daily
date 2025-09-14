@@ -16,10 +16,11 @@ Mobile-first restaurant performance tracking app with cash management, voucher t
 ## Core Features
 
 ### Authentication System
-- Phone number input
-- OTP verification
-- Role selection (Admin/Team Member)
-- JWT token management
+- Phone number input with country codes
+- WhatsApp OTP verification via Twilio
+- Enhanced role selection (Restaurant Admin/Staff Member)
+- JWT token management with restaurant context
+- Multi-restaurant support with data isolation
 
 ### Dashboard Components
 - Cash session overview
@@ -45,9 +46,16 @@ Mobile-first restaurant performance tracking app with cash management, voucher t
 - Payment history
 - Vendor management
 
-### User Roles
-- **Admin**: Full access, reporting, user management
-- **Team Member**: Basic tracking, limited reports
+### User Roles & Restaurant Management
+- **Restaurant Admin**: Full restaurant management, staff invitation, settings
+- **Staff Member**: Restaurant-specific access, daily operations (cash/vouchers)
+- **Multi-restaurant Support**: Scalable architecture for restaurant chains
+
+### Restaurant Management Features
+- Restaurant profile management (name, address, Google Maps)
+- Staff invitation system via WhatsApp
+- Role-based permissions and feature access
+- Restaurant-specific data isolation and security
 
 ## Technical Stack
 - Next.js 15.5.3 (App Router)
@@ -93,12 +101,13 @@ Mobile-first restaurant performance tracking app with cash management, voucher t
 
 **Status**: Authentication system fully functional - phone input, WhatsApp OTP delivery, verification, and JWT tokens
 
-### Phase 3: Core Dashboard & Navigation (NEXT)
-1. Main dashboard layout with metrics
-2. Navigation menu with role-based visibility
-3. Quick action buttons and shortcuts
-4. Real-time data updates
-5. Mobile-friendly touch interactions
+### Phase 3: Restaurant Management System (CURRENT)
+1. Restaurant admin role selection and onboarding
+2. Restaurant profile management (name, address, Google Maps)
+3. Staff invitation system via WhatsApp messaging
+4. Role-based navigation and permissions system
+5. Multi-restaurant database schema with RLS policies
+6. Restaurant-specific data isolation and security
 
 ### Phase 4: Cash Session Management
 1. Start/end cash session functionality
