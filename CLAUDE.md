@@ -227,19 +227,29 @@ node test-twilio-messaging.mjs
 - **Electricity Payments**: Payment monitoring and history
 - **Audit Logs**: Full activity tracking for compliance
 
-#### Required Supabase Secrets (stored in Vault)
+#### Hybrid Secrets Management
+**Production**: All secrets stored in Vault for security
+**Development**: Vault-first with .env.local fallback
+
+**Current Vault Secrets**:
 ```bash
-# Update these with your actual Supabase credentials
-vault kv put secret/supabase \
-  anon_key="YOUR_SUPABASE_ANON_KEY" \
-  service_role_key="YOUR_SUPABASE_SERVICE_ROLE_KEY" \
-  database_url="YOUR_SUPABASE_DATABASE_URL"
+# Supabase credentials (production secrets)
+vault kv get secret/supabase
+# Contains: url, anon_key, service_role_key, database_url
 
 # JWT secrets for authentication
-vault kv put secret/jwt \
-  access_token_secret="YOUR_STRONG_JWT_SECRET" \
-  refresh_token_secret="YOUR_STRONG_REFRESH_SECRET"
+vault kv get secret/jwt
+# Contains: access_token_secret
+
+# SMS/WhatsApp credentials
+vault kv get secret/sms
+# Contains: twilio credentials
 ```
+
+**Environment Configuration**:
+- **Vault-first**: System tries Vault secrets first
+- **Fallback**: Uses .env.local only when Vault unavailable
+- **Production**: Remove .env.local fallbacks for security
 
 ### 📱 Twilio WhatsApp Integration (Production Ready)
 

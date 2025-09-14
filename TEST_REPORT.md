@@ -11,7 +11,7 @@
 | **Total Tests** | 14 | ✅ |
 | **Passed** | 14 | ✅ |
 | **Failed** | 0 | ✅ |
-| **Duration** | 5.5s | ✅ |
+| **Duration** | 5.3s | ✅ |
 | **Browsers** | Chrome, Mobile Chrome | ✅ |
 
 ## 🎯 Test Coverage
@@ -106,7 +106,7 @@ Mobile Chrome:    ✅ 7/7 tests passing
 | **Load Time** | <2s | <2s | <3s |
 | **First Paint** | ~500ms | ~600ms | <1s |
 | **Interactive** | ~1s | ~1.2s | <2s |
-| **Test Duration** | 5.5s | - | <30s |
+| **Test Duration** | 5.3s | - | <30s |
 
 ## 🚀 Quality Gates
 
@@ -166,12 +166,12 @@ npm run test:report
 
 | Date | Tests | Passed | Failed | Duration | Phase | Notes |
 |------|-------|--------|--------|----------|-------|--------|
-| 2025-09-14 | 14 | 14 | 0 | 5.5s | Phase 2 | Authentication frontend complete |
+| 2025-09-14 | 14 | 14 | 0 | 5.3s | Phase 2 | Authentication frontend complete |
 | Previous | 4 | 4 | 0 | 3.2s | Phase 1 | Foundation tests only |
 
 ---
 
-**Generated:** 09/14/2025, 07:24 AM UTC
+**Generated:** 09/14/2025, 07:27 AM UTC
 **Environment:** Production (PM2 managed)
 **Live URL:** [https://restaurant-daily.mindweave.tech](https://restaurant-daily.mindweave.tech)
 **Repository:** [MindweaveTech/restaurant-daily](https://github.com/MindweaveTech/restaurant-daily)

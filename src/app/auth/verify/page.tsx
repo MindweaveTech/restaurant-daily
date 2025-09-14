@@ -136,9 +136,9 @@ export default function VerifyOTPPage() {
         sessionStorage.removeItem('pendingPhone');
         sessionStorage.removeItem('otpMethod');
 
-        // Show success briefly then redirect
+        // Show success briefly then redirect to role selection
         setTimeout(() => {
-          router.push('/dashboard');
+          router.push('/auth/role-selection');
         }, 1500);
       } else {
         setError(data.error || 'Invalid verification code. Please try again.');

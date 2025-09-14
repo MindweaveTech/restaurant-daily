@@ -4,21 +4,57 @@ import { useEffect, useState } from 'react';
 import { ChefHat, LogOut, CheckCircle } from 'lucide-react';
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<{ phone?: string; formattedPhone?: string } | null>(null);
+  const [user, setUser] = useState<{ phone?: string; formattedPhone?: string; role?: string; restaurant_id?: string } | null>(null);
 
   useEffect(() => {
-    // This is a placeholder - in a real app, you'd decode the JWT token
     const token = localStorage.getItem('auth_token');
     if (!token) {
       window.location.href = '/auth/phone';
       return;
     }
 
-    // Placeholder user data
-    setUser({
-      phone: '+918826175074', // This would come from JWT
-      formattedPhone: '+91 88261 75074'
-    });
+    // Decode JWT token to get user info
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+
+      // Check if user has selected a role
+      if (!payload.role) {
+        // Redirect to role selection
+        window.location.href = '/auth/role-selection';
+        return;
+      }
+
+      // Check role and redirect accordingly
+      if (payload.role === 'admin') {
+        if (!payload.restaurant_id) {
+          // Admin without restaurant - go to restaurant setup
+          window.location.href = '/onboarding/restaurant-setup';
+          return;
+        } else {
+          // Admin with restaurant - go to admin dashboard
+          window.location.href = '/dashboard/admin';
+          return;
+        }
+      } else if (payload.role === 'staff') {
+        // Staff member - go to staff welcome
+        window.location.href = '/onboarding/staff-welcome';
+        return;
+      }
+
+      // Fallback for any other case
+      setUser({
+        phone: payload.phone,
+        formattedPhone: payload.phone,
+        role: payload.role,
+        restaurant_id: payload.restaurant_id
+      });
+    } catch (error) {
+      console.error('Error parsing token:', error);
+      // Invalid token, redirect to login
+      localStorage.removeItem('auth_token');
+      window.location.href = '/auth/phone';
+      return;
+    }
   }, []);
 
   const handleLogout = () => {
