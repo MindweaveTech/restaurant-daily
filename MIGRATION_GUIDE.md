@@ -1,17 +1,41 @@
 # Database Migration Guide
 
-## Quick Migration (Recommended)
+## ✅ Migration Status: COMPLETED
 
-The automated migration scripts are ready! You have two options:
+**Database migration has been successfully applied!**
 
-### Option 1: Automated Migration (When Vault is configured)
+### What Was Done
 ```bash
-npm run db:migrate
+# 1. Supabase CLI authenticated with token (saved in Vault)
+export SUPABASE_ACCESS_TOKEN=sbp_07acea7ca4bbf0cabb31d61bd3aa12a3124395d5
+
+# 2. Project linked to Restaurant Daily cloud database
+supabase link --project-ref hukaqbgfmerutzhtchiu
+
+# 3. Migration file created from our schema
+mkdir -p supabase/migrations
+cp scripts/setup-database.sql supabase/migrations/20250914120000_initial_schema.sql
+
+# 4. Migration applied to Supabase cloud
+supabase db push
+# ✅ Result: "Applying migration 20250914120000_initial_schema.sql..."
 ```
 
-### Option 2: Alternative Migration (Environment fallback)
+### ✅ Tables Created Successfully
+- **restaurants** - Restaurant profiles, settings, admin contact
+- **users** - User authentication with roles and permissions
+- **staff_invitations** - WhatsApp-based staff invitation system
+- **RLS policies** - Row-level security for data isolation
+- **Indexes & constraints** - Performance and data integrity
+
+### Future Migrations
+For additional schema changes, create new migration files:
 ```bash
-npm run db:setup
+# Create new migration
+supabase migration new add_new_table
+
+# Apply to cloud
+supabase db push
 ```
 
 ## Manual Migration (Supabase Dashboard)

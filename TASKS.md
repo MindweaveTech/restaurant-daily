@@ -62,6 +62,11 @@
 - ✅ Implement hybrid secrets management (Vault-first with env fallback)
 - ✅ Create database services with proper TypeScript types and error handling
 - ✅ Add comprehensive API endpoints for restaurant and user management
+- ✅ **Set up Supabase CLI with proper project linking** (restaurant-daily ↔ hukaqbgfmerutzhtchiu)
+- ✅ **Deploy database schema to production** (migration `20250914120000_initial_schema.sql`)
+- ✅ **Create production database tables** (restaurants, users, staff_invitations)
+- ✅ **Store Supabase auth token in Vault** (secured as `supabase_auth_token`)
+- ✅ **Verify cloud database deployment** with RLS policies and constraints
 
 ## Active Tasks (Window: 5) - Phase 4: Core Business Features
 

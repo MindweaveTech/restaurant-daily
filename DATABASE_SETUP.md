@@ -36,11 +36,29 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 ```
 
-### 4. Run Database Migration
-1. Open Supabase Dashboard → SQL Editor
-2. Copy contents of `scripts/setup-database.sql`
-3. Paste and run the SQL script
-4. Verify tables are created: `restaurants`, `users`, `staff_invitations`
+### 4. Run Database Migration ✅ COMPLETED
+
+**Production Method: Supabase CLI (Already Applied)**
+```bash
+# Authentication with saved token in Vault
+export SUPABASE_ACCESS_TOKEN=sbp_...
+
+# Link project (already done)
+supabase link --project-ref hukaqbgfmerutzhtchiu
+
+# Create migration file (already done)
+mkdir -p supabase/migrations
+cp scripts/setup-database.sql supabase/migrations/20250914120000_initial_schema.sql
+
+# Apply migration to cloud database (✅ COMPLETED)
+supabase db push
+```
+
+**Status:** ✅ **Database migration completed successfully**
+- Migration applied: `20250914120000_initial_schema.sql`
+- Tables created: `restaurants`, `users`, `staff_invitations`
+- RLS policies, indexes, and constraints active
+- Supabase auth token saved in Vault as `supabase_auth_token`
 
 ## Database Schema
 

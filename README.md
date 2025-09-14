@@ -21,7 +21,7 @@ Found a bug? Please report it through one of these channels:
 | **Production App** | 🟢 Live | [restaurant-daily.mindweave.tech](https://restaurant-daily.mindweave.tech) |
 | **Production Server** | 🟢 PM2 Managed | http://localhost:3000 |
 | **SSL Certificate** | 🟢 Active | Let's Encrypt (Auto-renewal) |
-| **Database** | 🟢 PostgreSQL | Supabase with Row Level Security |
+| **Database** | 🟢 PostgreSQL | Supabase with Row Level Security (DEPLOYED) |
 | **Tests** | 🟢 Passing | [14/14 Playwright tests](./TEST_REPORT.md) |
 | **Secrets Management** | 🟢 Hybrid | Vault + Environment Fallback |
 | **Nginx Proxy** | 🟢 Active | Port 443/80 → 3000 |
@@ -192,6 +192,9 @@ src/
 - [x] Database integration with Supabase PostgreSQL
 - [x] Multi-restaurant architecture with data isolation
 - [x] Hybrid secrets management (Vault + fallback)
+- [x] **Supabase CLI integration and production deployment**
+- [x] **Database schema deployed to cloud** (`20250914120000_initial_schema.sql`)
+- [x] **Live database tables** (restaurants, users, staff_invitations)
 
 ### Phase 4: Core Business Features (Current)
 - [ ] Staff invitation system via WhatsApp
