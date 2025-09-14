@@ -22,8 +22,8 @@ test.describe('Restaurant Daily App', () => {
     await expect(page.locator('text=Monitor sales and operational metrics')).toBeVisible();
     await expect(page.locator('text=Role-based access for your team')).toBeVisible();
 
-    // Verify call-to-action button
-    await expect(page.locator('button:has-text("Get Started")')).toBeVisible();
+    // Verify call-to-action link
+    await expect(page.locator('a:has-text("Get Started")')).toBeVisible();
     await expect(page.locator('text=Sign in with your phone number to continue')).toBeVisible();
 
     // Check that icons are loaded (ChefHat, DollarSign, TrendingUp, Users)
@@ -47,7 +47,7 @@ test.describe('Restaurant Daily App', () => {
 
     // Check mobile layout
     await expect(page.locator('h1')).toContainText('Restaurant Daily');
-    await expect(page.locator('button:has-text("Get Started")')).toBeVisible();
+    await expect(page.locator('a:has-text("Get Started")')).toBeVisible();
 
     // Verify feature cards are visible on mobile (they may have multiple divs)
     await expect(page.locator('text=Cash Management')).toBeVisible();

@@ -160,7 +160,7 @@ export class TwilioMessagingClient {
   }
 
   /**
-   * Send message via WhatsApp using rich template
+   * Send message via WhatsApp using plain text (sandbox mode)
    */
   private static async sendWhatsApp(
     phoneNumber: string,
@@ -171,13 +171,19 @@ export class TwilioMessagingClient {
       const credentials = await this.getCredentials();
 
       const whatsappNumber = phoneUtils.toWhatsAppFormat(phoneNumber);
-      const contentVariables = MessageTemplates.getWhatsAppContentVariables(messageData);
+
+      // Use plain text message for sandbox mode instead of content templates
+      const messageBody = `🍽️ *Restaurant Daily*
+
+Your verification code: *${messageData.otpCode}*
+Expires in: ${messageData.expiryTime}
+
+Keep this code secure and don't share it.`;
 
       const message = await client.messages.create({
         from: credentials.whatsappNumber,
         to: whatsappNumber,
-        contentSid: credentials.contentSid,
-        contentVariables: JSON.stringify(contentVariables)
+        body: messageBody
       });
 
       const countryCode = PhoneValidator.getCountryCode(phoneNumber) || 'IN';

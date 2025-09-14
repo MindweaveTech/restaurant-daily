@@ -29,6 +29,7 @@ export interface OTPValidationResult {
  */
 export class OTPService {
   private static config: OTPConfig | null = null;
+  private static otpStore: Map<string, { otp: GeneratedOTP; attempts: number }> = new Map();
 
   /**
    * Get OTP configuration from Vault
@@ -91,11 +92,84 @@ export class OTPService {
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + config.expiry_minutes);
 
-    return {
+    const generatedOTP = {
       code,
       expiresAt,
       phoneNumber,
       purpose
+    };
+
+    // Store OTP for verification
+    this.otpStore.set(phoneNumber, { otp: generatedOTP, attempts: 0 });
+
+    return generatedOTP;
+  }
+
+  /**
+   * Verify OTP code
+   */
+  static async verifyOTP(
+    phoneNumber: string,
+    code: string
+  ): Promise<OTPValidationResult> {
+    const config = await this.getConfig();
+    const storedData = this.otpStore.get(phoneNumber);
+
+    // Check if OTP exists
+    if (!storedData) {
+      return {
+        isValid: false,
+        error: 'No verification code found. Please request a new one.'
+      };
+    }
+
+    const { otp, attempts } = storedData;
+
+    // Check if too many attempts
+    if (attempts >= config.max_attempts) {
+      this.otpStore.delete(phoneNumber); // Clean up
+      return {
+        isValid: false,
+        error: 'Too many failed attempts. Please request a new code.'
+      };
+    }
+
+    // Check if expired
+    if (this.isExpired(otp.expiresAt)) {
+      this.otpStore.delete(phoneNumber); // Clean up
+      return {
+        isValid: false,
+        isExpired: true,
+        error: 'Verification code has expired. Please request a new one.'
+      };
+    }
+
+    // Increment attempts
+    storedData.attempts++;
+
+    // Verify code
+    if (otp.code === code) {
+      this.otpStore.delete(phoneNumber); // Clean up on success
+      return {
+        isValid: true
+      };
+    }
+
+    // Invalid code
+    const remainingAttempts = config.max_attempts - storedData.attempts;
+
+    if (remainingAttempts <= 0) {
+      this.otpStore.delete(phoneNumber); // Clean up after max attempts
+      return {
+        isValid: false,
+        error: 'Too many failed attempts. Please request a new code.'
+      };
+    }
+
+    return {
+      isValid: false,
+      attemptsRemaining: remainingAttempts,
+      error: `Invalid verification code. ${remainingAttempts} ${remainingAttempts === 1 ? 'attempt' : 'attempts'} remaining.`
     };
   }
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ChefHat, TrendingUp, DollarSign, Users } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -60,9 +61,12 @@ export default function Home() {
         </div>
 
         <div className="text-center">
-          <button className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 px-8 rounded-lg text-lg transition-colors duration-200 shadow-lg">
+          <Link
+            href="/auth/phone"
+            className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 px-8 rounded-lg text-lg transition-colors duration-200 shadow-lg"
+          >
             Get Started
-          </button>
+          </Link>
           <p className="text-sm text-gray-500 mt-4">
             Sign in with your phone number to continue
           </p>
