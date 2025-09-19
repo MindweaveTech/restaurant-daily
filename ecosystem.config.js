@@ -11,11 +11,15 @@ module.exports = {
       max_memory_restart: '1G',
       env: {
         NODE_ENV: 'production',
-        PORT: 3000,
+        PORT: 3001,
+        VAULT_ADDR: 'http://127.0.0.1:8200',
+        VAULT_TOKEN: process.env.VAULT_TOKEN || 'vault-token-from-environment'
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3000,
+        PORT: 3001,
+        VAULT_ADDR: 'http://127.0.0.1:8200',
+        VAULT_TOKEN: process.env.VAULT_TOKEN || 'vault-token-from-environment'
       },
       log_file: '/home/grao/Projects/restaurant-daily/logs/combined.log',
       out_file: '/home/grao/Projects/restaurant-daily/logs/out.log',

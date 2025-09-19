@@ -24,12 +24,77 @@ export interface OTPValidationResult {
 }
 
 /**
+ * Demo user configuration for testing
+ */
+export interface DemoUser {
+  phoneNumber: string;
+  fixedOTP: string;
+  role: 'admin' | 'staff';
+  restaurantName?: string;
+  requiresRoleSelection?: boolean; // Allow demo users to go through role selection
+}
+
+/**
  * Secure OTP generation and validation service
  * Uses HashiCorp Vault for configuration
+ * Supports demo users for testing
  */
 export class OTPService {
   private static config: OTPConfig | null = null;
   private static otpStore: Map<string, { otp: GeneratedOTP; attempts: number }> = new Map();
+
+  /**
+   * Demo users for testing purposes
+   */
+  private static demoUsers: DemoUser[] = [
+    {
+      phoneNumber: '+919876543210',
+      fixedOTP: '123456',
+      role: 'admin',
+      restaurantName: 'Demo Restaurant Admin'
+    },
+    {
+      phoneNumber: '+919876543211',
+      fixedOTP: '654321',
+      role: 'staff',
+      restaurantName: 'Demo Restaurant Staff'
+    },
+    {
+      phoneNumber: '+14155552222',
+      fixedOTP: '111111',
+      role: 'admin',
+      restaurantName: 'US Demo Restaurant',
+      requiresRoleSelection: true // This user goes through role selection
+    }
+  ];
+
+  /**
+   * Check if phone number belongs to a demo user
+   */
+  static isDemoUser(phoneNumber: string): DemoUser | null {
+    return this.demoUsers.find(user => user.phoneNumber === phoneNumber) || null;
+  }
+
+  /**
+   * Generate OTP for demo user (returns fixed OTP)
+   */
+  static generateDemoOTP(demoUser: DemoUser, purpose: 'login' | 'registration' | 'password_reset' = 'login'): GeneratedOTP {
+    // Create a long-lived OTP for demo users (30 minutes)
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 30);
+
+    const generatedOTP = {
+      code: demoUser.fixedOTP,
+      expiresAt,
+      phoneNumber: demoUser.phoneNumber,
+      purpose
+    };
+
+    // Store demo OTP for verification
+    this.otpStore.set(demoUser.phoneNumber, { otp: generatedOTP, attempts: 0 });
+
+    return generatedOTP;
+  }
 
   /**
    * Get OTP configuration from Vault
@@ -300,6 +365,27 @@ export class OTPRateLimit {
    */
   static clearRateLimit(phoneNumber: string): void {
     this.attempts.delete(phoneNumber);
+  }
+
+  /**
+   * Check current rate limit status for debugging
+   */
+  static async getRateLimitStatus(phoneNumber: string): Promise<{attempts: number, remaining: number, nextResetTime: Date}> {
+    const config = await OTPService['getConfig']();
+    const now = Date.now();
+    const hourAgo = now - (60 * 60 * 1000);
+
+    const phoneAttempts = this.attempts.get(phoneNumber) || [];
+    const recentAttempts = phoneAttempts.filter(timestamp => timestamp > hourAgo);
+
+    const oldestAttempt = Math.min(...recentAttempts);
+    const nextResetTime = new Date(oldestAttempt + (60 * 60 * 1000));
+
+    return {
+      attempts: recentAttempts.length,
+      remaining: Math.max(0, config.rate_limit_per_hour - recentAttempts.length),
+      nextResetTime: recentAttempts.length > 0 ? nextResetTime : new Date()
+    };
   }
 }
 

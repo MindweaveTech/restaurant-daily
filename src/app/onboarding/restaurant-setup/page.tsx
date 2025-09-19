@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChefHat, Building2, ExternalLink, ArrowRight, CheckCircle } from 'lucide-react';
+import { ChefHat, Building2, ExternalLink, ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function RestaurantSetupPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
+  const [roleError, setRoleError] = useState<string | null>(null);
+  const [isValidating, setIsValidating] = useState(true);
 
   // Form state
   const [restaurantData, setRestaurantData] = useState({
@@ -22,6 +24,49 @@ export default function RestaurantSetupPage() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Role validation - ensure only admin users can access restaurant setup
+  useEffect(() => {
+    const validateUserRole = () => {
+      const token = localStorage.getItem('auth_token');
+
+      if (!token) {
+        setRoleError('Authentication required. Please log in first.');
+        setTimeout(() => router.push('/auth/phone'), 2000);
+        return;
+      }
+
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+
+        if (payload.role !== 'admin') {
+          setRoleError(
+            payload.role === 'staff'
+              ? 'Staff members cannot create restaurants. Only restaurant admins can set up new restaurants.'
+              : 'Invalid role. Only restaurant admins can create restaurants.'
+          );
+          setTimeout(() => {
+            // Redirect staff to their appropriate onboarding
+            if (payload.role === 'staff') {
+              router.push('/onboarding/staff-welcome');
+            } else {
+              router.push('/auth/role-selection');
+            }
+          }, 3000);
+          return;
+        }
+
+        // Valid admin user
+        setIsValidating(false);
+      } catch (error) {
+        console.error('Token validation error:', error);
+        setRoleError('Invalid authentication token. Please log in again.');
+        setTimeout(() => router.push('/auth/phone'), 2000);
+      }
+    };
+
+    validateUserRole();
+  }, [router]);
 
   const validateStep = (currentStep: number) => {
     const newErrors: Record<string, string> = {};
@@ -380,6 +425,56 @@ export default function RestaurantSetupPage() {
       </div>
     </div>
   );
+
+  // Show loading screen while validating role
+  if (isValidating) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-700">Validating access...</h2>
+          <p className="text-gray-500 mt-2">Checking your permissions</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show role error screen
+  if (roleError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
+        <div className="container mx-auto px-4 py-8 max-w-md">
+          <div className="bg-white rounded-lg shadow-md p-6 text-center">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 bg-red-100 rounded-full">
+                <AlertTriangle className="h-8 w-8 text-red-600" />
+              </div>
+            </div>
+
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
+              Access Restricted
+            </h2>
+
+            <p className="text-gray-600 mb-6">
+              {roleError}
+            </p>
+
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <h3 className="font-medium text-red-800 mb-2">Why can&apos;t I access this page?</h3>
+              <p className="text-sm text-red-700">
+                Restaurant setup is only available to restaurant administrators.
+                Staff members have their own onboarding process and dashboard.
+              </p>
+            </div>
+
+            <p className="text-sm text-gray-500">
+              You will be redirected automatically in a few seconds...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">

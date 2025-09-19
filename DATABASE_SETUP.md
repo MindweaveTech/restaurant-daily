@@ -1,16 +1,19 @@
 # Database Setup Guide
 
+## ✅ Current Status (2025-09-14)
+**Database is DEPLOYED and WORKING** with all tables created and RLS configured.
+
 ## Overview
 This project uses Supabase (PostgreSQL) for data persistence with Row Level Security for multi-restaurant data isolation.
 
-## Quick Setup
+**Active Database**:
+- Project URL: `https://hukaqbgfmerutzhtchiu.supabase.co`
+- Project ID: `hukaqbgfmerutzhtchiu`
+- Status: ✅ Live with all migrations applied
 
-### 1. Supabase Project Setup
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Create a new project or use existing: `Restaurant Daily`
-3. Note your project details:
-   - Project URL: `https://hukaqbgfmerutzhtchiu.supabase.co`
-   - Project ID: `hukaqbgfmerutzhtchiu`
+For detailed schema information, see `DATABASE_SCHEMA.md`
+
+## Quick Setup (Already Completed)
 
 ### 2. Get API Keys
 1. In Supabase Dashboard → Settings → API

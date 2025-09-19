@@ -1,51 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { OTPService } from '@/lib/messaging/otp-service';
+import { OTPService, DemoUser } from '@/lib/messaging/otp-service';
 import { PhoneValidator } from '@/lib/messaging/phone-validator';
 import jwt from 'jsonwebtoken';
-import { execSync } from 'child_process';
+import { secretsManager } from '@/lib/secrets';
 
 interface VerifyOTPRequest {
   phoneNumber: string;
   otpCode: string;
 }
 
-interface JWTCredentials {
-  accessTokenSecret: string;
-  refreshTokenSecret: string;
-}
+// Remove old JWT credentials function - using secretsManager instead
 
-/**
- * Get JWT credentials from Vault
- */
-async function getJWTCredentials(): Promise<JWTCredentials> {
-  try {
-    const vaultToken = process.env.VAULT_TOKEN || 'your_vault_dev_token';
-    const command = `VAULT_ADDR='http://127.0.0.1:8200' VAULT_TOKEN='${vaultToken}' vault kv get -format=json secret/jwt`;
-    const result = execSync(command, { encoding: 'utf8' });
-    const parsed = JSON.parse(result);
-
-    return {
-      accessTokenSecret: parsed.data.data.access_token_secret,
-      refreshTokenSecret: parsed.data.data.refresh_token_secret
-    };
-  } catch (error) {
-    throw new Error(`Failed to retrieve JWT credentials from Vault: ${error}`);
-  }
+interface JWTPayload {
+  phone: string;
+  role: string;
+  iat: number;
+  exp: number;
+  isDemoUser?: boolean;
+  demoRole?: string;
+  demoRestaurantName?: string;
+  restaurant_id?: string;
 }
 
 /**
  * Generate JWT token for authenticated user
  */
-function generateToken(phoneNumber: string, credentials: JWTCredentials): string {
-  return jwt.sign(
-    {
-      phone: phoneNumber,
-      role: 'user', // Default role, will be updated after role selection
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 hours
-    },
-    credentials.accessTokenSecret
-  );
+async function generateToken(phoneNumber: string, demoUser?: DemoUser | null): Promise<string> {
+  const payload: JWTPayload = {
+    phone: phoneNumber,
+    role: (demoUser && !demoUser.requiresRoleSelection) ? demoUser.role : 'user', // Use demo role only if not going through role selection
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 hours
+  };
+
+  // Add demo user specific claims
+  if (demoUser) {
+    payload.isDemoUser = true;
+    payload.demoRole = demoUser.role;
+    payload.demoRestaurantName = demoUser.restaurantName;
+    // Give demo admin users a mock restaurant_id only if they skip role selection
+    if (demoUser.role === 'admin' && !demoUser.requiresRoleSelection) {
+      payload.restaurant_id = 'demo-restaurant-' + demoUser.phoneNumber.slice(-4);
+    }
+  }
+
+  // Use same JWT secret as update-role API
+  const jwtSecret = await secretsManager.getJWTSecret() || process.env.JWT_SECRET || 'your-super-secret-jwt-key-for-development';
+  return jwt.sign(payload, jwtSecret);
 }
 
 export async function POST(request: NextRequest) {
@@ -109,15 +110,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Check if this is a demo user
+    const demoUser = OTPService.isDemoUser(phoneValidation.formatted!);
+
     // Generate JWT token
-    const jwtCredentials = await getJWTCredentials();
-    const token = generateToken(phoneValidation.formatted!, jwtCredentials);
+    const token = await generateToken(phoneValidation.formatted!, demoUser);
 
     // Format phone for display
     const formattedPhone = PhoneValidator.formatForDisplay(phoneValidation.formatted!);
 
     // Log successful authentication
-    console.log(`✅ Authentication successful for ${formattedPhone}`);
+    if (demoUser) {
+      console.log(`🎭 Demo user authentication successful for ${formattedPhone} (${demoUser.role})`);
+    } else {
+      console.log(`✅ Authentication successful for ${formattedPhone}`);
+    }
 
     return NextResponse.json({
       success: true,
@@ -127,7 +134,10 @@ export async function POST(request: NextRequest) {
         phone: phoneValidation.formatted,
         formattedPhone,
         country: phoneValidation.country,
-        requiresRoleSelection: true // User needs to select role next
+        requiresRoleSelection: !demoUser || demoUser?.requiresRoleSelection, // Demo users skip role selection unless explicitly configured
+        isDemoUser: !!demoUser,
+        demoRole: demoUser?.role,
+        demoRestaurantName: demoUser?.restaurantName
       }
     });
 

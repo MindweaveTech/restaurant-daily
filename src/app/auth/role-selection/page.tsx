@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChefHat, Users, Building2, ArrowRight, Crown, UserCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -9,6 +9,42 @@ export default function RoleSelectionPage() {
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<'admin' | 'staff' | null>(null);
   const [loading, setLoading] = useState(false);
+  const [validatingSession, setValidatingSession] = useState(true);
+
+  // Validate user session on page load
+  useEffect(() => {
+    const validateSession = () => {
+      const token = localStorage.getItem('auth_token');
+
+      if (!token) {
+        console.log('No auth token found, redirecting to login');
+        router.push('/auth/phone');
+        return;
+      }
+
+      try {
+        // Check if token is valid and not expired
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const currentTime = Math.floor(Date.now() / 1000);
+
+        if (payload.exp < currentTime) {
+          console.log('Token expired, redirecting to login');
+          localStorage.removeItem('auth_token');
+          router.push('/auth/phone');
+          return;
+        }
+
+        // Token is valid
+        setValidatingSession(false);
+      } catch (error) {
+        console.error('Invalid token format, redirecting to login');
+        localStorage.removeItem('auth_token');
+        router.push('/auth/phone');
+      }
+    };
+
+    validateSession();
+  }, [router]);
 
   const handleRoleSelect = (role: 'admin' | 'staff') => {
     setSelectedRole(role);
@@ -50,7 +86,17 @@ export default function RoleSelectionPage() {
         }
       } else {
         console.error('Failed to update role:', data.error);
-        // Continue anyway for now
+
+        // If the error is authentication-related, redirect to login
+        if (response.status === 401) {
+          console.log('Authentication failed, redirecting to login');
+          localStorage.removeItem('auth_token');
+          router.push('/auth/phone');
+          return;
+        }
+
+        // For other errors, continue anyway for now but log the issue
+        console.warn('Role update failed but continuing with flow');
         if (selectedRole === 'admin') {
           router.push('/onboarding/restaurant-setup');
         } else {
@@ -69,6 +115,18 @@ export default function RoleSelectionPage() {
       setLoading(false);
     }
   };
+
+  // Show loading screen while validating session
+  if (validatingSession) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-md p-8 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Validating session...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
@@ -125,9 +183,16 @@ export default function RoleSelectionPage() {
 
               {/* Description */}
               <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                I own or manage a restaurant and want to set up my restaurant profile,
-                invite staff members, and manage operations.
+                I own or manage a restaurant and want to create my restaurant profile,
+                invite staff members, and have full administrative control.
               </p>
+
+              {/* Important Notice */}
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+                <p className="text-xs text-orange-800 font-medium">
+                  ⚠️ Choose this if you need to CREATE a new restaurant
+                </p>
+              </div>
 
               {/* Features */}
               <div className="space-y-2 text-left">
@@ -193,6 +258,13 @@ export default function RoleSelectionPage() {
                 the team for daily operations tracking.
               </p>
 
+              {/* Important Notice */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <p className="text-xs text-blue-800 font-medium">
+                  ℹ️ Staff members cannot create restaurants - join existing ones
+                </p>
+              </div>
+
               {/* Features */}
               <div className="space-y-2 text-left">
                 <div className="flex items-center text-sm text-gray-700">
@@ -255,20 +327,45 @@ export default function RoleSelectionPage() {
           </button>
 
           {selectedRole && (
-            <p className="mt-4 text-sm text-gray-500">
-              {selectedRole === 'admin'
-                ? "You'll be able to set up your restaurant and invite team members"
-                : "You'll join your restaurant team for daily operations"
-              }
-            </p>
+            <div className="mt-4">
+              <p className="text-sm text-gray-600 mb-3">
+                {selectedRole === 'admin'
+                  ? "As a Restaurant Admin, you'll be able to create your restaurant profile and invite team members"
+                  : "As Staff, you'll join an existing restaurant team for daily operations tracking"
+                }
+              </p>
+
+              {selectedRole === 'admin' && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <p className="text-xs text-green-800">
+                    ✅ This role allows you to create new restaurants
+                  </p>
+                </div>
+              )}
+
+              {selectedRole === 'staff' && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <p className="text-xs text-yellow-800">
+                    ⚠️ Staff cannot create restaurants - only join existing ones
+                  </p>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
         {/* Help Text */}
         <div className="mt-12 text-center">
-          <p className="text-sm text-gray-500 max-w-md mx-auto">
-            Don&apos;t worry, you can change your role later if needed.
-            Choose the option that best describes your current situation.
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 max-w-md mx-auto">
+            <h4 className="font-medium text-gray-800 mb-2">Need help choosing?</h4>
+            <div className="text-sm text-gray-600 space-y-2 text-left">
+              <p><strong>Choose Admin if:</strong> You own/manage a restaurant and need to set it up</p>
+              <p><strong>Choose Staff if:</strong> You work at a restaurant that&apos;s already set up</p>
+            </div>
+          </div>
+
+          <p className="text-xs text-gray-400 mt-4">
+            You can contact support if you need to change your role later.
           </p>
         </div>
       </div>

@@ -211,8 +211,22 @@ node test-twilio-messaging.mjs
 - **Development tokens** are generated each time Vault dev server starts
 - **Never commit tokens** to git repositories (GitHub secret scanning will block)
 - **Tokens expire** when Vault dev server stops/restarts
-- **Current dev token**: `hvs.YOUR_VAULT_DEV_TOKEN` (save locally!)
+- **Current dev token**: Check Vault server output for latest token (✅ SAVE LOCALLY!)
 - **Production**: Use Vault auth methods (AWS IAM, Azure AD, etc.)
+
+##### ✅ WORKING VAULT SETUP (Current)
+```bash
+# Get token from Vault server output when starting:
+vault server -dev
+# Look for: "Root Token: hvs.XXXXXXXXXX"
+
+# Set environment variables
+export VAULT_ADDR='http://127.0.0.1:8200'
+export VAULT_TOKEN='[GET_FROM_VAULT_OUTPUT]'
+
+# Restart PM2 with Vault environment
+VAULT_TOKEN='[YOUR_TOKEN]' VAULT_ADDR='http://127.0.0.1:8200' pm2 restart restaurant-daily --update-env
+```
 
 #### Supabase Configuration
 - **Project Name**: Restaurant Daily
@@ -253,12 +267,14 @@ vault kv get secret/sms
 
 ### 📱 Twilio WhatsApp Integration (Production Ready)
 
-#### Current Status: ✅ WORKING
+#### Current Status: ✅ FULLY WORKING (2025-09-14)
 - **WhatsApp Number**: `+14155238886` (sandbox mode)
-- **Account**: `ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
+- **Account SID**: Stored securely in Vault `secret/sms` ✅ ACTIVE
+- **Auth Token**: Stored securely in Vault `secret/sms` ✅ WORKING
 - **Delivery Method**: WhatsApp-primary with SMS fallback (when upgraded)
 - **Cost**: ₹0.35/message (WhatsApp), no base costs
 - **Coverage**: Global (perfect for Indian restaurant market)
+- **Status**: Real phone numbers receiving WhatsApp messages ✅
 
 #### Quick Test Commands
 ```bash
@@ -278,11 +294,11 @@ curl -X POST https://restaurant-daily.mindweave.tech/api/auth/test-messaging \
 
 #### Vault Configuration
 ```bash
-# Twilio credentials (stored securely in Vault)
+# Twilio credentials (store securely in Vault - NEVER commit actual keys!)
 vault kv put secret/sms \
   provider="twilio" \
-  account_sid="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
-  twilio_auth_token="YOUR_TWILIO_AUTH_TOKEN" \
+  account_sid="[YOUR_TWILIO_ACCOUNT_SID]" \
+  twilio_auth_token="[YOUR_TWILIO_AUTH_TOKEN]" \
   from_number="+14155238886" \
   whatsapp_number="whatsapp:+14155238886" \
   content_sid="HXb5b62575e6e4ff6129ad7c8efe1f983e" \
@@ -319,3 +335,51 @@ When ready to upgrade from sandbox to full SMS:
 - ✅ Audit logging
 - ✅ Cost optimization (WhatsApp-primary)
 - ✅ Production-ready security
+
+### 🔧 CURRENT WORKING SETUP SUMMARY (2025-09-19)
+
+#### ✅ All Systems Operational
+- **Production App**: PM2 managed, auto-restart enabled
+- **Vault Server**: Development mode, all secrets configured
+- **Twilio Integration**: Real WhatsApp messages working
+- **Authentication Flow**: Complete phone → OTP → login
+- **Database**: Supabase PostgreSQL with RLS deployed
+
+#### Demo Users (Always Work)
+```
+Phone: +919876543210 → OTP: 123456 (Admin - Direct to dashboard)
+Phone: +919876543211 → OTP: 654321 (Staff - Direct to staff welcome)
+Phone: +14155552222 → OTP: 111111 (US Admin - Goes through role selection)
+```
+
+#### Role Selection Flow (Fixed 2025-09-19)
+✅ **Working**: US demo user (+14155552222) now properly goes through role selection
+✅ **Fixed**: JWT secret mismatch between verify-otp and update-role APIs
+✅ **Fixed**: JWT expiresIn conflict that was causing role update failures
+✅ **Enhanced**: Session validation on role selection page prevents access without valid token
+
+#### Critical Commands for Restart
+```bash
+# 1. Start Vault (get new token from output)
+vault server -dev
+
+# 2. Restore secrets (use actual credentials)
+export VAULT_ADDR='http://127.0.0.1:8200'
+export VAULT_TOKEN='[FROM_VAULT_OUTPUT]'
+
+# 3. Setup Twilio (replace with real values)
+vault kv put secret/sms provider="twilio" \
+  account_sid="[YOUR_SID]" \
+  twilio_auth_token="[YOUR_TOKEN]" \
+  from_number="+14155238886" \
+  whatsapp_number="whatsapp:+14155238886"
+
+# 4. Restart production
+VAULT_TOKEN='[TOKEN]' VAULT_ADDR='http://127.0.0.1:8200' pm2 restart restaurant-daily --update-env
+```
+
+#### Architecture Notes
+- **Secrets**: Never commit to git, always use Vault
+- **Tokens**: Regenerate on each Vault restart
+- **Testing**: Use demo users for development
+- **Production**: Real Twilio credentials in Vault only
