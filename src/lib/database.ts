@@ -1,4 +1,4 @@
-import { getSupabaseAdmin, supabaseAdmin, Restaurant, User } from './supabase';
+import { getSupabaseAdmin, supabaseAdmin, Restaurant, User, StaffInvitation } from './supabase';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 // Helper to get client with fallback
@@ -200,6 +200,164 @@ export class UserService {
   }
 }
 
+// Staff invitation operations
+export class StaffInvitationService {
+
+  async createInvitation(data: {
+    restaurant_id: string;
+    phone: string;
+    invited_by: string;
+    role?: 'staff';
+    permissions?: string[];
+  }): Promise<StaffInvitation> {
+
+    // Generate secure invitation token
+    const invitationToken = crypto.randomUUID();
+
+    // Set expiration to 7 days from now
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    const invitationData = {
+      restaurant_id: data.restaurant_id,
+      phone: data.phone,
+      invited_by: data.invited_by,
+      role: data.role || 'staff' as const,
+      permissions: data.permissions || [],
+      status: 'pending' as const,
+      invitation_token: invitationToken,
+      expires_at: expiresAt.toISOString(),
+    };
+
+    const client = await getClient();
+    const { data: invitation, error } = await client
+      .from('staff_invitations')
+      .insert([invitationData])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Database error creating staff invitation:', error);
+      throw new Error(`Failed to create staff invitation: ${error.message}`);
+    }
+
+    return invitation;
+  }
+
+  async getInvitationByToken(token: string): Promise<StaffInvitation | null> {
+    const client = await getClient();
+    const { data: invitation, error } = await client
+      .from('staff_invitations')
+      .select('*')
+      .eq('invitation_token', token)
+      .eq('status', 'pending')
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // Invitation not found
+        return null;
+      }
+      console.error('Database error fetching invitation:', error);
+      throw new Error(`Failed to fetch invitation: ${error.message}`);
+    }
+
+    return invitation;
+  }
+
+  async getRestaurantInvitations(restaurant_id: string): Promise<StaffInvitation[]> {
+    const client = await getClient();
+    const { data: invitations, error } = await client
+      .from('staff_invitations')
+      .select('*')
+      .eq('restaurant_id', restaurant_id)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Database error fetching restaurant invitations:', error);
+      throw new Error(`Failed to fetch invitations: ${error.message}`);
+    }
+
+    return invitations || [];
+  }
+
+  async acceptInvitation(invitationId: string): Promise<StaffInvitation> {
+    const client = await getClient();
+    const { data: invitation, error } = await client
+      .from('staff_invitations')
+      .update({
+        status: 'accepted',
+        accepted_at: new Date().toISOString()
+      })
+      .eq('id', invitationId)
+      .eq('status', 'pending')
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Database error accepting invitation:', error);
+      throw new Error(`Failed to accept invitation: ${error.message}`);
+    }
+
+    return invitation;
+  }
+
+  async cancelInvitation(invitationId: string): Promise<StaffInvitation> {
+    const client = await getClient();
+    const { data: invitation, error } = await client
+      .from('staff_invitations')
+      .update({ status: 'cancelled' })
+      .eq('id', invitationId)
+      .eq('status', 'pending')
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Database error cancelling invitation:', error);
+      throw new Error(`Failed to cancel invitation: ${error.message}`);
+    }
+
+    return invitation;
+  }
+
+  async expireOldInvitations(): Promise<void> {
+    const client = await getClient();
+    const { error } = await client
+      .from('staff_invitations')
+      .update({ status: 'expired' })
+      .eq('status', 'pending')
+      .lt('expires_at', new Date().toISOString());
+
+    if (error) {
+      console.error('Database error expiring old invitations:', error);
+      // Don't throw error for cleanup operations
+    }
+  }
+
+  async checkExistingInvitation(restaurant_id: string, phone: string): Promise<StaffInvitation | null> {
+    const client = await getClient();
+    const { data: invitation, error } = await client
+      .from('staff_invitations')
+      .select('*')
+      .eq('restaurant_id', restaurant_id)
+      .eq('phone', phone)
+      .eq('status', 'pending')
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No existing invitation
+        return null;
+      }
+      console.error('Database error checking existing invitation:', error);
+      throw new Error(`Failed to check existing invitation: ${error.message}`);
+    }
+
+    return invitation;
+  }
+}
+
 // Singleton instances
 export const restaurantService = new RestaurantService();
 export const userService = new UserService();
+export const staffInvitationService = new StaffInvitationService();

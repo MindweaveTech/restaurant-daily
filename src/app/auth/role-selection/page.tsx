@@ -78,9 +78,17 @@ export default function RoleSelectionPage() {
           localStorage.setItem('auth_token', data.token);
         }
 
-        // Redirect based on role
+        // Check if the token contains restaurant information
+        const tokenPayload = data.token ? JSON.parse(atob(data.token.split('.')[1])) : null;
+
+        // Redirect based on role and existing restaurant
         if (selectedRole === 'admin') {
-          router.push('/onboarding/restaurant-setup');
+          // If admin already has a restaurant, go to dashboard
+          if (tokenPayload?.restaurant_id && tokenPayload?.restaurant_name) {
+            router.push('/dashboard/admin');
+          } else {
+            router.push('/onboarding/restaurant-setup');
+          }
         } else {
           router.push('/onboarding/staff-welcome');
         }
@@ -97,8 +105,16 @@ export default function RoleSelectionPage() {
 
         // For other errors, continue anyway for now but log the issue
         console.warn('Role update failed but continuing with flow');
+        // Try to check existing token for restaurant info even on error
+        const currentToken = localStorage.getItem('auth_token');
+        const currentPayload = currentToken ? JSON.parse(atob(currentToken.split('.')[1])) : null;
+
         if (selectedRole === 'admin') {
-          router.push('/onboarding/restaurant-setup');
+          if (currentPayload?.restaurant_id && currentPayload?.restaurant_name) {
+            router.push('/dashboard/admin');
+          } else {
+            router.push('/onboarding/restaurant-setup');
+          }
         } else {
           router.push('/onboarding/staff-welcome');
         }
@@ -106,8 +122,16 @@ export default function RoleSelectionPage() {
     } catch (error) {
       console.error('Role selection error:', error);
       // Continue anyway for now - we can handle this gracefully
+      // Try to check existing token for restaurant info
+      const currentToken = localStorage.getItem('auth_token');
+      const currentPayload = currentToken ? JSON.parse(atob(currentToken.split('.')[1])) : null;
+
       if (selectedRole === 'admin') {
-        router.push('/onboarding/restaurant-setup');
+        if (currentPayload?.restaurant_id && currentPayload?.restaurant_name) {
+          router.push('/dashboard/admin');
+        } else {
+          router.push('/onboarding/restaurant-setup');
+        }
       } else {
         router.push('/onboarding/staff-welcome');
       }

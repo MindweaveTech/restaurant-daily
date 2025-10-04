@@ -182,6 +182,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(({
           placeholder={placeholder}
           disabled={disabled}
           required={required}
+          data-testid="phone-input"
           className={cn(
             'block w-full pl-24 pr-10 py-2 border rounded-lg',
             'focus:ring-2 focus:ring-offset-0 focus:outline-none',

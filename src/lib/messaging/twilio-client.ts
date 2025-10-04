@@ -326,6 +326,84 @@ Keep this code secure and don't share it.`;
   }
 
   /**
+   * Send staff invitation via WhatsApp
+   */
+  static async sendStaffInvitation(
+    phoneNumber: string,
+    restaurantName: string,
+    invitationLink: string,
+    expiresAt: string
+  ): Promise<MessageResult> {
+    try {
+      // Validate phone number
+      const phoneValidation = PhoneValidator.validate(phoneNumber);
+      if (!phoneValidation.isValid) {
+        return {
+          success: false,
+          method: 'whatsapp',
+          error: phoneValidation.error
+        };
+      }
+
+      // Format expiry date
+      const expiryDate = new Date(expiresAt);
+      const formattedExpiry = expiryDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+
+      // Get client and credentials
+      const client = await this.getClient();
+      const credentials = await this.getCredentials();
+
+      // Create invitation message
+      const messageBody = `🍽️ *Restaurant Daily* - Staff Invitation
+
+Hi! You've been invited to join *${restaurantName}* as a team member.
+
+📱 *Accept your invitation:*
+${invitationLink}
+
+⏰ *This invitation expires on:* ${formattedExpiry}
+
+Welcome to the team! 🎉
+
+---
+Restaurant Daily - Performance Tracking Made Simple`;
+
+      // Format phone number for WhatsApp
+      const whatsappNumber = phoneUtils.toWhatsAppFormat(phoneValidation.formatted!);
+
+      // Send WhatsApp message
+      const message = await client.messages.create({
+        from: credentials.whatsappNumber,
+        to: whatsappNumber,
+        body: messageBody
+      });
+
+      const countryCode = PhoneValidator.getCountryCode(phoneNumber) || 'IN';
+      const estimatedCost = MessageTemplates.getEstimatedCost('whatsapp', countryCode);
+
+      return {
+        success: true,
+        messageSid: message.sid,
+        method: 'whatsapp',
+        cost: estimatedCost,
+        deliveryStatus: message.status
+      };
+
+    } catch (error) {
+      console.error('WhatsApp invitation failed:', error);
+      return {
+        success: false,
+        method: 'whatsapp',
+        error: error instanceof Error ? error.message : 'WhatsApp delivery failed'
+      };
+    }
+  }
+
+  /**
    * Get account usage statistics (for monitoring)
    */
   static async getUsageStats(): Promise<{

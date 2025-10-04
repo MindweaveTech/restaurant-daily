@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { secretsManager } from '@/lib/secrets';
+import { userService, restaurantService } from '@/lib/database';
 
 interface JWTPayload {
   phone: string;
@@ -58,12 +59,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if user already exists in database and has a restaurant
+    let existingUser = null;
+    let restaurant = null;
+
+    if (!decoded.isDemoUser) {
+      try {
+        existingUser = await userService.getUserByPhone(decoded.phone);
+        if (existingUser?.restaurant_id) {
+          restaurant = await restaurantService.getRestaurantById(existingUser.restaurant_id);
+        }
+      } catch (error) {
+        console.log('Failed to check existing user:', error);
+      }
+    }
+
     // Create new token with role information
     const newTokenPayload: JWTPayload & Record<string, unknown> = {
       phone: decoded.phone,
       role: role,
-      // Preserve existing restaurant_id (important for demo users)
-      restaurant_id: decoded.restaurant_id || null,
+      // Use existing restaurant_id from database if available, otherwise preserve token restaurant_id
+      restaurant_id: existingUser?.restaurant_id || decoded.restaurant_id || null,
+      // Include restaurant name if we found it
+      restaurant_name: restaurant?.name || undefined,
       iat: Math.floor(Date.now() / 1000),
       exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 hours
     };
@@ -77,7 +95,9 @@ export async function POST(request: NextRequest) {
 
     console.log('🔍 Role selection debug:');
     console.log('  - Original restaurant_id:', decoded.restaurant_id);
-    console.log('  - New token restaurant_id:', newTokenPayload.restaurant_id);
+    console.log('  - Database restaurant_id:', existingUser?.restaurant_id);
+    console.log('  - Final restaurant_id:', newTokenPayload.restaurant_id);
+    console.log('  - Restaurant name:', newTokenPayload.restaurant_name);
     console.log('  - Is demo user:', decoded.isDemoUser);
 
     const newToken = jwt.sign(
