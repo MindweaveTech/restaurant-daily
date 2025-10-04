@@ -5,7 +5,7 @@ test.describe('Restaurant Admin Registration Flow', () => {
     console.log('🏪 Testing complete restaurant admin registration flow');
 
     // Step 1: Navigate to homepage
-    await page.goto('http://localhost:3000');
+    await page.goto('http://localhost:3001');
     await expect(page.locator('h1')).toContainText('Restaurant Daily');
     console.log('✅ Homepage loaded');
 
@@ -173,7 +173,7 @@ test.describe('Restaurant Admin Registration Flow', () => {
     });
 
     // Follow the same flow but focus on the API call
-    await page.goto('http://localhost:3000/auth/phone');
+    await page.goto('http://localhost:3001/auth/phone');
     await page.fill('input[type="tel"]', '+919876543210');
     await page.click('button:has-text("Send Verification Code")');
     await expect(page).toHaveURL(/\/auth\/verify/);

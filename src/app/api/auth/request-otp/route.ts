@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { TwilioMessagingClient } from '@/lib/messaging/twilio-client';
 import { PhoneValidator } from '@/lib/messaging/phone-validator';
 import { OTPRateLimit, OTPService } from '@/lib/messaging/otp-service';
+import { logAPI, logAuth, logError } from '@/lib/logger';
 
 // Request validation schema
 const requestOTPSchema = z.object({
@@ -12,12 +13,14 @@ const requestOTPSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
   try {
     // Parse request body
     const body = await request.json();
     const validation = requestOTPSchema.safeParse(body);
 
     if (!validation.success) {
+      logAPI('POST', '/api/auth/request-otp', 400, Date.now() - startTime, { error: 'Validation failed' });
       return NextResponse.json(
         {
           success: false,
@@ -33,6 +36,7 @@ export async function POST(request: NextRequest) {
     // Validate phone number format
     const phoneValidation = PhoneValidator.validate(phoneNumber);
     if (!phoneValidation.isValid) {
+      logAPI('POST', '/api/auth/request-otp', 400, Date.now() - startTime, { error: 'Invalid phone number' });
       return NextResponse.json(
         {
           success: false,
@@ -44,6 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     const formattedPhone = phoneValidation.formatted!;
+    logAuth('request-otp', formattedPhone, true, { purpose, preferredMethod });
 
     // Check if this is a demo user first
     const demoUser = OTPService.isDemoUser(formattedPhone);
@@ -98,6 +103,8 @@ export async function POST(request: NextRequest) {
     });
 
     if (!messageResult.success) {
+      logAuth('request-otp', formattedPhone, false, { error: messageResult.error });
+      logAPI('POST', '/api/auth/request-otp', 500, Date.now() - startTime, { error: 'Failed to send OTP' });
       return NextResponse.json(
         {
           success: false,
@@ -108,8 +115,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Log the successful attempt (in production, log to database)
-    console.log(`OTP sent via ${messageResult.method} to ${formattedPhone.slice(-4)} (${messageResult.messageSid})`);
+    logAuth('otp-sent', formattedPhone, true, { method: messageResult.method, messageSid: messageResult.messageSid });
+    logAPI('POST', '/api/auth/request-otp', 200, Date.now() - startTime);
 
     // Return success response (don't expose sensitive data)
     return NextResponse.json({

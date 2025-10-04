@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Complete Authentication Flow', () => {
   test.beforeEach(async ({ page }) => {
-    // Start fresh for each test
-    await page.goto('http://localhost:3000');
+    // Start fresh for each test - using relative URL to leverage baseURL from config
+    await page.goto('/');
     await page.evaluate(() => {
       localStorage.clear();
       sessionStorage.clear();
@@ -67,7 +67,7 @@ test.describe('Complete Authentication Flow', () => {
     console.log('🎯 Testing complete staff authentication flow');
 
     // Step 1-3: Navigate and enter staff phone
-    await page.goto('http://localhost:3000/auth/phone');
+    await page.goto('http://localhost:3001/auth/phone');
     await page.fill('input[type="tel"]', '+919876543211');
     await page.click('button:has-text("Send Verification Code")');
     console.log('✅ Staff phone number entered and OTP requested');
@@ -105,7 +105,7 @@ test.describe('Complete Authentication Flow', () => {
     console.log('🎯 Testing role selection flow');
 
     // Create a non-demo user flow by going through role selection
-    await page.goto('http://localhost:3000/auth/phone');
+    await page.goto('http://localhost:3001/auth/phone');
     await page.fill('input[type="tel"]', '+14155552222');
     await page.click('button:has-text("Send Verification Code")');
 
@@ -158,7 +158,7 @@ test.describe('Complete Authentication Flow', () => {
     console.log('🎯 Testing staff access prevention to restaurant setup');
 
     // First, login as staff
-    await page.goto('http://localhost:3000/auth/phone');
+    await page.goto('http://localhost:3001/auth/phone');
     await page.fill('input[type="tel"]', '+919876543211');
     await page.click('button:has-text("Send Verification Code")');
 
@@ -174,7 +174,7 @@ test.describe('Complete Authentication Flow', () => {
     console.log('✅ Staff user authenticated and on staff welcome page');
 
     // Now try to access restaurant setup directly
-    await page.goto('http://localhost:3000/onboarding/restaurant-setup');
+    await page.goto('http://localhost:3001/onboarding/restaurant-setup');
 
     // Wait for either error message or redirect
     await page.waitForTimeout(5000);
@@ -198,13 +198,13 @@ test.describe('Complete Authentication Flow', () => {
     console.log('🎯 Testing invalid token handling');
 
     // Set an invalid token
-    await page.goto('http://localhost:3000');
+    await page.goto('http://localhost:3001');
     await page.evaluate(() => {
       localStorage.setItem('auth_token', 'invalid.token.here');
     });
 
     // Try to access restaurant setup
-    await page.goto('http://localhost:3000/onboarding/restaurant-setup');
+    await page.goto('http://localhost:3001/onboarding/restaurant-setup');
 
     // Should redirect to phone auth due to invalid token
     await page.waitForTimeout(3000);
@@ -230,7 +230,7 @@ test.describe('Complete Authentication Flow', () => {
       route.abort('failed');
     });
 
-    await page.goto('http://localhost:3000/auth/phone');
+    await page.goto('http://localhost:3001/auth/phone');
     await page.fill('input[type="tel"]', '+919876543210');
     await page.click('button:has-text("Send Verification Code")');
 
@@ -242,7 +242,7 @@ test.describe('Complete Authentication Flow', () => {
   test('should validate phone number format', async ({ page }) => {
     console.log('🎯 Testing phone number validation');
 
-    await page.goto('http://localhost:3000/auth/phone');
+    await page.goto('http://localhost:3001/auth/phone');
 
     // Test invalid phone number
     await page.fill('input[type="tel"]', '123');
@@ -266,7 +266,7 @@ test.describe('Complete Authentication Flow', () => {
   test('should handle OTP expiration', async ({ page }) => {
     console.log('🎯 Testing OTP expiration handling');
 
-    await page.goto('http://localhost:3000/auth/phone');
+    await page.goto('http://localhost:3001/auth/phone');
     await page.fill('input[type="tel"]', '+919876543210');
     await page.click('button:has-text("Send Verification Code")');
 

@@ -156,13 +156,15 @@ git push origin main  # Triggers full quality gate pipeline
 - Secure messaging via Twilio WhatsApp Business API
 
 ### Quick Access
-- **Local Development**: http://localhost:3000
+- **Local Development**: http://localhost:3001
 - **Production Access**: https://restaurant-daily.mindweave.tech ✅ HTTPS
 - **Fallback IP**: https://4.213.183.139
 - **Mobile Testing**: Works on iPhone Safari with HTTPS
-- **Production Server**: PM2 managed, auto-restart enabled
+- **Production Server**: PM2 managed, auto-restart enabled (port 3001)
 - **Pre-push Hooks**: Tests, lint, and build checks before push
 - **SSL Status**: Valid certificate, force HTTPS redirect, CSS loading fixed
+
+**Note**: App uses port 3001 consistently in both dev and production. Port 3000 is reserved for Mindweave company site.
 
 ### Secrets Management & Database
 

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Role-Based Access Control', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:3000');
+    await page.goto('http://localhost:3001');
     await page.evaluate(() => {
       localStorage.clear();
       sessionStorage.clear();
@@ -13,7 +13,7 @@ test.describe('Role-Based Access Control', () => {
     console.log('🔒 Testing admin-only restaurant setup access');
 
     // Test 1: Unauthenticated access
-    await page.goto('http://localhost:3000/onboarding/restaurant-setup');
+    await page.goto('http://localhost:3001/onboarding/restaurant-setup');
     await expect(page.locator('text=Authentication required')).toBeVisible({ timeout: 5000 });
     console.log('✅ Unauthenticated users blocked from restaurant setup');
 
@@ -36,7 +36,7 @@ test.describe('Role-Based Access Control', () => {
     console.log('✅ Staff user authenticated');
 
     // Now try to access restaurant setup as staff
-    await page.goto('http://localhost:3000/onboarding/restaurant-setup');
+    await page.goto('http://localhost:3001/onboarding/restaurant-setup');
     await expect(page.locator('text=Access Restricted')).toBeVisible({ timeout: 5000 });
     await expect(page.locator('text=Staff members cannot create restaurants')).toBeVisible();
     console.log('✅ Staff users properly blocked from restaurant setup');
@@ -51,7 +51,7 @@ test.describe('Role-Based Access Control', () => {
     console.log('🔓 Testing admin access to restaurant setup');
 
     // Login as admin through role selection
-    await page.goto('http://localhost:3000/auth/phone');
+    await page.goto('http://localhost:3001/auth/phone');
     await page.fill('input[type="tel"]', '+14155552222'); // US demo user goes through role selection
     await page.click('button:has-text("Send Verification Code")');
 
@@ -78,7 +78,7 @@ test.describe('Role-Based Access Control', () => {
       console.log('✅ Demo admin user went directly to dashboard');
 
       // Try accessing restaurant setup
-      await page.goto('http://localhost:3000/onboarding/restaurant-setup');
+      await page.goto('http://localhost:3001/onboarding/restaurant-setup');
       // Should be allowed (loading screen then form)
       await expect(page.locator('text=Restaurant Setup')).toBeVisible({ timeout: 5000 });
       console.log('✅ Admin user allowed direct access to restaurant setup');
@@ -89,7 +89,7 @@ test.describe('Role-Based Access Control', () => {
     console.log('🛡️ Testing role escalation prevention');
 
     // Login as staff
-    await page.goto('http://localhost:3000/auth/phone');
+    await page.goto('http://localhost:3001/auth/phone');
     await page.fill('input[type="tel"]', '+919876543211');
     await page.click('button:has-text("Send Verification Code")');
     await expect(page).toHaveURL(/\/auth\/verify/);
@@ -113,7 +113,7 @@ test.describe('Role-Based Access Control', () => {
       console.log('✅ Verified staff token contains staff role');
 
       // Try to access admin endpoints with staff token
-      const response = await page.request.post('http://localhost:3000/api/restaurant/create', {
+      const response = await page.request.post('http://localhost:3001/api/restaurant/create', {
         headers: {
           'Authorization': `Bearer ${staffToken}`,
           'Content-Type': 'application/json'
@@ -135,7 +135,7 @@ test.describe('Role-Based Access Control', () => {
     console.log('🔐 Testing token tampering protection');
 
     // Login normally first
-    await page.goto('http://localhost:3000/auth/phone');
+    await page.goto('http://localhost:3001/auth/phone');
     await page.fill('input[type="tel"]', '+919876543210');
     await page.click('button:has-text("Send Verification Code")');
     await expect(page).toHaveURL(/\/auth\/verify/);
@@ -154,7 +154,7 @@ test.describe('Role-Based Access Control', () => {
     });
 
     // Try to access protected resource
-    await page.goto('http://localhost:3000/onboarding/restaurant-setup');
+    await page.goto('http://localhost:3001/onboarding/restaurant-setup');
 
     // Should detect invalid token and redirect
     await expect(page.locator('text=Invalid authentication token')).toBeVisible({ timeout: 5000 });
@@ -167,7 +167,7 @@ test.describe('Role-Based Access Control', () => {
     console.log('🔄 Testing role consistency during navigation');
 
     // Login as admin
-    await page.goto('http://localhost:3000/auth/phone');
+    await page.goto('http://localhost:3001/auth/phone');
     await page.fill('input[type="tel"]', '+919876543210');
     await page.click('button:has-text("Send Verification Code")');
     await expect(page).toHaveURL(/\/auth\/verify/);
@@ -189,7 +189,7 @@ test.describe('Role-Based Access Control', () => {
     ];
 
     for (const pagePath of adminPages) {
-      await page.goto(`http://localhost:3000${pagePath}`);
+      await page.goto(`http://localhost:3001${pagePath}`);
       await page.waitForTimeout(1000);
 
       // Should not show access denied messages
@@ -203,7 +203,7 @@ test.describe('Role-Based Access Control', () => {
     console.log('🔄 Testing role change flow');
 
     // Start with role selection flow
-    await page.goto('http://localhost:3000/auth/phone');
+    await page.goto('http://localhost:3001/auth/phone');
     await page.fill('input[type="tel"]', '+14155552222');
     await page.click('button:has-text("Send Verification Code")');
     await expect(page).toHaveURL(/\/auth\/verify/);
@@ -288,7 +288,7 @@ test.describe('Role-Based Access Control', () => {
       console.log(`Testing scenario: ${scenario.name}`);
 
       await scenario.setup();
-      await page.goto('http://localhost:3000/onboarding/restaurant-setup');
+      await page.goto('http://localhost:3001/onboarding/restaurant-setup');
 
       await expect(page.locator(`text=${scenario.expectedMessage}`)).toBeVisible({ timeout: 5000 });
       console.log(`✅ Correct error message shown for ${scenario.name}`);
