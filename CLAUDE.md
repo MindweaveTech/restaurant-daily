@@ -180,18 +180,21 @@ vault server -dev
 
 ##### Development Token Management
 ```bash
-# Option 1: Save to local environment file (RECOMMENDED)
-echo "VAULT_TOKEN=hvs.YOUR_VAULT_DEV_TOKEN" >> .env.local
+# ✅ RECOMMENDED: Save to .env.local (auto-loaded by Next.js)
+echo "VAULT_ADDR=http://127.0.0.1:8200" >> .env.local
+echo "VAULT_TOKEN=[GET_FROM_VAULT_OUTPUT]" >> .env.local
 echo ".env.local" >> .gitignore
 
-# Option 2: Save to shell profile (persistent across sessions)
-echo "export VAULT_TOKEN=hvs.YOUR_VAULT_DEV_TOKEN" >> ~/.bashrc
-source ~/.bashrc
-
-# Option 3: Set for current session only
+# For manual Vault CLI commands only (temporary session)
 export VAULT_ADDR='http://127.0.0.1:8200'
-export VAULT_TOKEN='hvs.YOUR_VAULT_DEV_TOKEN'
+export VAULT_TOKEN='[GET_FROM_VAULT_OUTPUT]'
 ```
+
+**Why NOT to use ~/.zshrc:**
+- Tokens change on every Vault restart
+- Requires manual updates each time
+- Mixes permanent config with temporary secrets
+- .env.local is automatically loaded by Next.js
 
 ##### Vault Commands
 ```bash
@@ -362,20 +365,36 @@ Phone: +14155552222 → OTP: 111111 (US Admin - Goes through role selection)
 ```bash
 # 1. Start Vault (get new token from output)
 vault server -dev
+# Look for: "Root Token: hvs.XXXXXXXXXX"
 
-# 2. Restore secrets (use actual credentials)
+# 2. Update .env.local with new token (one file to manage)
+echo "VAULT_ADDR=http://127.0.0.1:8200" > .env.local
+echo "VAULT_TOKEN=[PASTE_TOKEN_FROM_STEP_1]" >> .env.local
+
+# 3. All secrets are configured in Vault ✅
 export VAULT_ADDR='http://127.0.0.1:8200'
-export VAULT_TOKEN='[FROM_VAULT_OUTPUT]'
+export VAULT_TOKEN='[YOUR_TOKEN]'
+vault kv list secret/  # Shows: jwt, otp, sms, supabase
 
-# 3. Setup Twilio (replace with real values)
-vault kv put secret/sms provider="twilio" \
-  account_sid="[YOUR_SID]" \
-  twilio_auth_token="[YOUR_TOKEN]" \
-  from_number="+14155238886" \
-  whatsapp_number="whatsapp:+14155238886"
+# 4. Restart dev server (reads .env.local automatically)
+npm run dev
 
-# 4. Restart production
-VAULT_TOKEN='[TOKEN]' VAULT_ADDR='http://127.0.0.1:8200' pm2 restart restaurant-daily --update-env
+# 5. Or restart production with Vault environment
+VAULT_TOKEN='[YOUR_TOKEN]' VAULT_ADDR='http://127.0.0.1:8200' pm2 restart restaurant-daily --update-env
+```
+
+#### 📋 Quick Setup Commands:
+```bash
+# Start Vault dev server
+vault server -dev  # Note the Root Token from output
+
+# Configure all secrets (replace token with actual value)
+export VAULT_ADDR='http://127.0.0.1:8200'
+export VAULT_TOKEN='[YOUR_VAULT_TOKEN]'
+vault kv put secret/supabase url="https://hukaqbgfmerutzhtchiu.supabase.co" anon_key="[KEY]" service_role_key="[KEY]"
+vault kv put secret/jwt access_token_secret="[SECRET]"
+vault kv put secret/sms provider="twilio" account_sid="[SID]" twilio_auth_token="[TOKEN]" from_number="+14155238886" whatsapp_number="whatsapp:+14155238886"
+vault kv put secret/otp length="6" expiry_minutes="5" max_attempts="3" rate_limit_per_hour="3" cleanup_interval_hours="24"
 ```
 
 #### Architecture Notes
