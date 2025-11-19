@@ -11,7 +11,7 @@
 - ✅ HashiCorp Vault: All credentials secured
 - ✅ Live Production: https://restaurant-daily.mindweave.tech
 
-**Note**: For complete setup instructions, see `DEPLOYMENT_NOTES.md`
+**Note**: For complete setup instructions, see `CLAUDE.md` (Development section) or deployment guide
 
 ### **Integration Goals - ✅ ACHIEVED**
 1. ✅ **OTP Delivery**: WhatsApp authentication codes working

@@ -102,14 +102,14 @@ git push origin main  # Triggers full quality gate pipeline
 - **Icons**: Lucide React
 - **Process Manager**: PM2 (production)
 - **Git Hooks**: Husky (pre-push testing)
-- **Production Server**: Port 3000 (PM2 managed)
+- **Production Server**: Port 3001 (PM2 managed)
 
 #### Nginx Configuration
 - **Config File**: `/etc/nginx/sites-available/restaurant-daily`
 - **Enabled**: Symlinked to `/etc/nginx/sites-enabled/`
 - **Ports**: 443 (HTTPS), 80 (HTTP redirect)
 - **SSL**: Let's Encrypt certificate with auto-renewal
-- **Proxy**: Forwards all traffic to localhost:3000
+- **Proxy**: Forwards all traffic to localhost:3001
 - **Headers**: X-Forwarded-Proto, X-Forwarded-Host, X-Forwarded-Server
 - **Features**: Gzip compression, proper headers, WebSocket support
 - **Status**: Active with HTTPS working
