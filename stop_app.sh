@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # Restaurant Daily - Stop Development Server
-# This script stops the development server gracefully
+# Usage: ./stop_app.sh
 
 set -e
 
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PID_FILE="$PROJECT_ROOT/.app.pid"
 
 if [ ! -f "$PID_FILE" ]; then
-    echo "❌ No running server found (PID file not found)"
+    echo "❌ No running server found"
     exit 1
 fi
 

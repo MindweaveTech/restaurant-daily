@@ -11,18 +11,18 @@ npm run build
 
 ### Development Commands
 
-#### Server Control (Using app.sh) ✅ RECOMMENDED
+#### Server Control Scripts ✅ RECOMMENDED
 ```bash
-./app.sh start        # Start development server on port 3001
-./app.sh stop         # Stop development server gracefully
-./app.sh restart      # Restart development server
-./app.sh status       # Check server status and resource usage
-./app.sh logs         # View real-time server logs (Ctrl+C to exit)
+./start_app.sh        # Start development server on port 3001
+./stop_app.sh         # Stop development server gracefully
+./restart_app.sh      # Restart development server
+./status_app.sh       # Check server status and resource usage
+./logs_app.sh         # View real-time server logs (Ctrl+C to exit)
 ```
 
 #### NPM Commands
 ```bash
-npm run dev           # Development server (Turbopack) - also: ./app.sh start
+npm run dev           # Development server (Turbopack) - also: ./start_app.sh
 npm start             # Production server (PM2 managed)
 npm run build         # Production build
 npm run test          # Run Playwright tests
@@ -181,52 +181,37 @@ git push origin main  # Triggers full quality gate pipeline
 
 The project includes convenient shell scripts for managing the development server without using npm directly.
 
-#### Location & Files
-```
-scripts/app/
-├── start.sh      # Start the development server
-├── stop.sh       # Stop the development server gracefully
-├── restart.sh    # Restart the development server
-├── status.sh     # Check server status and resource usage
-└── logs.sh       # View real-time server logs
-```
-
-#### Master Control Script
+#### Root-Level Scripts
 ```bash
-./app.sh [COMMAND]
+./start_app.sh          # Start the development server on port 3001
+./stop_app.sh           # Stop the development server gracefully
+./restart_app.sh        # Restart the development server
+./status_app.sh         # Check server status and resource usage
+./logs_app.sh           # View real-time server logs (Ctrl+C to exit)
 ```
-
-#### Available Commands
-| Command | Action | Usage |
-|---------|--------|-------|
-| `start` | Start server on port 3001 | `./app.sh start` |
-| `stop` | Stop server gracefully | `./app.sh stop` |
-| `restart` | Restart the server | `./app.sh restart` |
-| `status` | Check if running + resource usage | `./app.sh status` |
-| `logs` | View real-time logs (Ctrl+C to exit) | `./app.sh logs` |
 
 #### Features
-- ✅ **PID Management**: Automatically saves/tracks process ID
+- ✅ **PID Management**: Automatically saves/tracks process ID in `.app.pid`
 - ✅ **Graceful Shutdown**: 5-second graceful kill, then force kill if needed
 - ✅ **Log Tracking**: Automatically logs to `.app.log` file
 - ✅ **Memory Monitoring**: Shows memory usage in status
 - ✅ **Multiple Start Protection**: Prevents running multiple instances
 - ✅ **Clean State**: Auto-removes stale PID files
 
-#### Examples
+#### Quick Examples
 ```bash
 # Start server and check status
-./app.sh start
-./app.sh status
+./start_app.sh
+./status_app.sh
 
 # View logs while running
-./app.sh logs
+./logs_app.sh
 
 # Restart server
-./app.sh restart
+./restart_app.sh
 
 # Stop when done
-./app.sh stop
+./stop_app.sh
 ```
 
 ### Secrets Management & Database

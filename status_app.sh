@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Restaurant Daily - Check Server Status
-# This script checks if the development server is running
+# Usage: ./status_app.sh
 
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PID_FILE="$PROJECT_ROOT/.app.pid"
 
 echo "📊 Restaurant Daily Server Status"
