@@ -48,3 +48,5 @@ next-env.d.ts
 logs/
 logs/
 .claude/
+.app.log
+.app.pid

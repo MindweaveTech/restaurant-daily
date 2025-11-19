@@ -10,8 +10,19 @@ npm run build
 ```
 
 ### Development Commands
+
+#### Server Control (Using app.sh) ✅ RECOMMENDED
 ```bash
-npm run dev           # Development server (Turbopack)
+./app.sh start        # Start development server on port 3001
+./app.sh stop         # Stop development server gracefully
+./app.sh restart      # Restart development server
+./app.sh status       # Check server status and resource usage
+./app.sh logs         # View real-time server logs (Ctrl+C to exit)
+```
+
+#### NPM Commands
+```bash
+npm run dev           # Development server (Turbopack) - also: ./app.sh start
 npm start             # Production server (PM2 managed)
 npm run build         # Production build
 npm run test          # Run Playwright tests
@@ -165,6 +176,58 @@ git push origin main  # Triggers full quality gate pipeline
 - **SSL Status**: Valid certificate, force HTTPS redirect, CSS loading fixed
 
 **Note**: App uses port 3001 consistently in both dev and production. Port 3000 is reserved for Mindweave company site.
+
+### Server Control Scripts 🎛️
+
+The project includes convenient shell scripts for managing the development server without using npm directly.
+
+#### Location & Files
+```
+scripts/app/
+├── start.sh      # Start the development server
+├── stop.sh       # Stop the development server gracefully
+├── restart.sh    # Restart the development server
+├── status.sh     # Check server status and resource usage
+└── logs.sh       # View real-time server logs
+```
+
+#### Master Control Script
+```bash
+./app.sh [COMMAND]
+```
+
+#### Available Commands
+| Command | Action | Usage |
+|---------|--------|-------|
+| `start` | Start server on port 3001 | `./app.sh start` |
+| `stop` | Stop server gracefully | `./app.sh stop` |
+| `restart` | Restart the server | `./app.sh restart` |
+| `status` | Check if running + resource usage | `./app.sh status` |
+| `logs` | View real-time logs (Ctrl+C to exit) | `./app.sh logs` |
+
+#### Features
+- ✅ **PID Management**: Automatically saves/tracks process ID
+- ✅ **Graceful Shutdown**: 5-second graceful kill, then force kill if needed
+- ✅ **Log Tracking**: Automatically logs to `.app.log` file
+- ✅ **Memory Monitoring**: Shows memory usage in status
+- ✅ **Multiple Start Protection**: Prevents running multiple instances
+- ✅ **Clean State**: Auto-removes stale PID files
+
+#### Examples
+```bash
+# Start server and check status
+./app.sh start
+./app.sh status
+
+# View logs while running
+./app.sh logs
+
+# Restart server
+./app.sh restart
+
+# Stop when done
+./app.sh stop
+```
 
 ### Secrets Management & Database
 
