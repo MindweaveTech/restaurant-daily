@@ -69,38 +69,38 @@ export default function PhoneAuthPage() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
-      <div className="container mx-auto px-4 py-8 max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex flex-col">
+      <div className="container mx-auto px-4 py-4 sm:py-8 max-w-md flex-1 flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6 sm:mb-8">
           <Link
             href="/"
-            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors text-sm sm:text-base"
             aria-label="Go back to home"
           >
-            <ArrowLeft className="h-5 w-5 mr-2" />
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
             Back
           </Link>
 
           <div className="flex items-center">
-            <ChefHat className="h-6 w-6 text-orange-600 mr-2" />
-            <span className="text-lg font-semibold text-gray-800">Restaurant Daily</span>
+            <ChefHat className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600 mr-2" />
+            <span className="text-base sm:text-lg font-semibold text-gray-800">Restaurant Daily</span>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 flex-1 flex flex-col">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
               Welcome Back
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600">
               Enter your phone number to receive a verification code and access your restaurant dashboard.
             </p>
           </div>
 
           {/* Phone Input Form */}
-          <div className="space-y-6" onKeyPress={handleKeyPress}>
+          <div className="space-y-4 sm:space-y-6 flex-1 flex flex-col" onKeyPress={handleKeyPress}>
             <PhoneInput
               value={phoneNumber}
               onChange={handlePhoneChange}
@@ -119,7 +119,7 @@ export default function PhoneAuthPage() {
               disabled={!isValid || loading}
               data-testid="send-otp-button"
               className={cn(
-                'w-full flex items-center justify-center px-4 py-3 rounded-lg font-semibold text-base',
+                'w-full flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg font-semibold text-sm sm:text-base',
                 'transition-all duration-200 shadow-sm',
                 'focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2',
                 isValid && !loading
@@ -130,13 +130,13 @@ export default function PhoneAuthPage() {
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                  Sending Code...
+                  <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white mr-2" />
+                  <span className="text-sm sm:text-base">Sending Code...</span>
                 </>
               ) : (
                 <>
-                  <Send className="h-4 w-4 mr-2" />
-                  Send Verification Code
+                  <Send className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                  <span className="text-sm sm:text-base">Send Verification Code</span>
                 </>
               )}
             </button>
@@ -148,24 +148,24 @@ export default function PhoneAuthPage() {
 
 
           {/* Security Notice */}
-          <div className="mt-8 p-4 bg-orange-50 rounded-lg border border-orange-200">
-            <h3 className="text-sm font-medium text-orange-900 mb-1">
+          <div className="mt-6 sm:mt-8 p-3 sm:p-4 bg-orange-50 rounded-lg border border-orange-200">
+            <h3 className="text-xs sm:text-sm font-medium text-orange-900 mb-1">
               🔐 Secure Authentication
             </h3>
-            <p className="text-xs text-orange-700">
+            <p className="text-xs text-orange-700 leading-relaxed">
               Your phone number is used only for authentication and account security.
               We never share your information with third parties.
             </p>
           </div>
 
           {/* Help Text */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
+          <div className="mt-4 sm:mt-6 text-center">
+            <p className="text-xs sm:text-sm text-gray-500 mb-2 px-2 sm:px-0">
               Having trouble? Check that your number is correct and you have WhatsApp installed.
             </p>
             <Link
               href="/"
-              className="text-sm text-orange-600 hover:text-orange-700 underline mt-2 inline-block"
+              className="text-xs sm:text-sm text-orange-600 hover:text-orange-700 underline inline-block mt-2"
             >
               Need help? Contact support
             </Link>
@@ -173,8 +173,8 @@ export default function PhoneAuthPage() {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-xs text-gray-500">
+        <div className="text-center mt-6 sm:mt-8 pb-4 sm:pb-0">
+          <p className="text-xs text-gray-500 px-2 sm:px-0 leading-relaxed">
             By continuing, you agree to our Terms of Service and Privacy Policy
           </p>
         </div>

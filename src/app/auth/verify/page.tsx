@@ -197,50 +197,50 @@ export default function VerifyOTPPage() {
   const isComplete = otp.every(digit => digit !== '');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
-      <div className="container mx-auto px-4 py-8 max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex flex-col">
+      <div className="container mx-auto px-4 py-4 sm:py-8 max-w-md flex-1 flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6 sm:mb-8">
           <Link
             href="/auth/phone"
-            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors text-sm sm:text-base"
             aria-label="Go back to phone input"
           >
-            <ArrowLeft className="h-5 w-5 mr-2" />
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
             Back
           </Link>
 
           <div className="flex items-center">
-            <ChefHat className="h-6 w-6 text-orange-600 mr-2" />
-            <span className="text-lg font-semibold text-gray-800">Restaurant Daily</span>
+            <ChefHat className="h-5 w-5 sm:h-6 sm:w-6 text-orange-600 mr-2" />
+            <span className="text-base sm:text-lg font-semibold text-gray-800">Restaurant Daily</span>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <div className="p-3 bg-orange-100 rounded-full">
-                <Shield className="h-8 w-8 text-orange-600" />
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 flex-1 flex flex-col">
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <div className="p-2 sm:p-3 bg-orange-100 rounded-full">
+                <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600" />
               </div>
             </div>
 
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
               Enter Verification Code
             </h1>
 
-            <p className="text-gray-600 mb-2">
+            <p className="text-sm sm:text-base text-gray-600 mb-1 px-2 sm:px-0">
               We sent a 6-digit code via {otpMethod === 'whatsapp' ? 'WhatsApp' : 'SMS'} to:
             </p>
 
-            <p className="font-medium text-gray-800 mb-4">
+            <p className="font-medium text-gray-800 mb-4 text-sm sm:text-base">
               {maskPhoneNumber(phoneNumber)}
             </p>
           </div>
 
           {/* OTP Input */}
-          <div className="mb-6">
-            <div className="flex justify-center space-x-3 mb-4">
+          <div className="mb-4 sm:mb-6 flex-1 flex flex-col">
+            <div className="flex justify-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
               {otp.map((digit, index) => (
                 <input
                   key={index}
@@ -254,7 +254,7 @@ export default function VerifyOTPPage() {
                   onPaste={index === 0 ? handlePaste : undefined}
                   disabled={loading}
                   className={cn(
-                    'w-12 h-12 text-center text-xl font-semibold rounded-lg border-2',
+                    'w-10 h-10 sm:w-12 sm:h-12 text-center text-lg sm:text-xl font-semibold rounded-lg border-2',
                     'focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500',
                     'transition-all duration-200',
                     digit ? 'border-green-300 bg-green-50' : 'border-gray-300',
@@ -267,7 +267,7 @@ export default function VerifyOTPPage() {
             </div>
 
             {/* Timer */}
-            <div className="text-center text-sm text-gray-500 mb-4">
+            <div className="text-center text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">
               {timeLeft > 0 ? (
                 <>Code expires in {formatTime(timeLeft)}</>
               ) : (
@@ -278,8 +278,8 @@ export default function VerifyOTPPage() {
 
           {/* Error Message */}
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-700 text-center">{error}</p>
+            <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-xs sm:text-sm text-red-700 text-center">{error}</p>
             </div>
           )}
 
@@ -288,8 +288,8 @@ export default function VerifyOTPPage() {
             onClick={() => handleVerifyOTP()}
             disabled={!isComplete || loading}
             className={cn(
-              'w-full flex items-center justify-center px-4 py-3 rounded-lg font-semibold text-base',
-              'transition-all duration-200 shadow-sm mb-4',
+              'w-full flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg font-semibold text-sm sm:text-base',
+              'transition-all duration-200 shadow-sm mb-3 sm:mb-4',
               'focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2',
               isComplete && !loading
                 ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-md hover:shadow-lg'
@@ -298,13 +298,13 @@ export default function VerifyOTPPage() {
           >
             {loading ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                Verifying...
+                <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white mr-2" />
+                <span className="text-sm sm:text-base">Verifying...</span>
               </>
             ) : (
               <>
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Verify Code
+                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                <span className="text-sm sm:text-base">Verify Code</span>
               </>
             )}
           </button>
@@ -315,7 +315,7 @@ export default function VerifyOTPPage() {
               onClick={handleResendOTP}
               disabled={!canResend || resendLoading}
               className={cn(
-                'text-sm font-medium transition-colors',
+                'text-xs sm:text-sm font-medium transition-colors',
                 canResend && !resendLoading
                   ? 'text-orange-600 hover:text-orange-700 underline'
                   : 'text-gray-400 cursor-not-allowed'
@@ -324,20 +324,20 @@ export default function VerifyOTPPage() {
               {resendLoading ? (
                 <div className="flex items-center justify-center">
                   <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-orange-600 mr-2" />
-                  Sending...
+                  <span className="text-xs sm:text-sm">Sending...</span>
                 </div>
               ) : (
                 <div className="flex items-center justify-center">
                   <RotateCcw className="h-3 w-3 mr-1" />
-                  Resend Code
+                  <span className="text-xs sm:text-sm">Resend Code</span>
                 </div>
               )}
             </button>
           </div>
 
           {/* Help Text */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500 mb-2">
+          <div className="mt-4 sm:mt-6 text-center">
+            <p className="text-xs sm:text-sm text-gray-500 mb-1 px-2 sm:px-0">
               Didn&apos;t receive the code? Check your {otpMethod === 'whatsapp' ? 'WhatsApp' : 'SMS'} and try resending.
             </p>
             <p className="text-xs text-gray-400">
