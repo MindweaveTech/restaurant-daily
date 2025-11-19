@@ -398,18 +398,11 @@ When ready to upgrade from sandbox to full SMS:
 - **Authentication Flow**: Complete phone → OTP → login
 - **Database**: Supabase PostgreSQL with RLS deployed
 
-#### Demo Users (Always Work)
-```
-Phone: +919876543210 → OTP: 123456 (Admin - Direct to dashboard)
-Phone: +919876543211 → OTP: 654321 (Staff - Direct to staff welcome)
-Phone: +14155552222 → OTP: 111111 (US Admin - Goes through role selection)
-```
-
-#### Role Selection Flow (Fixed 2025-09-19)
-✅ **Working**: US demo user (+14155552222) now properly goes through role selection
-✅ **Fixed**: JWT secret mismatch between verify-otp and update-role APIs
-✅ **Fixed**: JWT expiresIn conflict that was causing role update failures
-✅ **Enhanced**: Session validation on role selection page prevents access without valid token
+#### Authentication Flow
+✅ **Phone-based OTP**: All users authenticate via phone with WhatsApp/SMS OTP
+✅ **Role Selection**: All users go through role selection to set up their account
+✅ **Secure Tokens**: JWT tokens issued after OTP verification
+✅ **Session Management**: Token stored in localStorage, cleared on logout
 
 #### Critical Commands for Restart
 ```bash
@@ -450,5 +443,5 @@ vault kv put secret/otp length="6" expiry_minutes="5" max_attempts="3" rate_limi
 #### Architecture Notes
 - **Secrets**: Never commit to git, always use Vault
 - **Tokens**: Regenerate on each Vault restart
-- **Testing**: Use demo users for development
+- **Testing**: Use test phone numbers with real Twilio OTP flow
 - **Production**: Real Twilio credentials in Vault only

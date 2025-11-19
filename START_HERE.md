@@ -87,8 +87,8 @@ The server will be available at: **http://localhost:3001**
 
 1. Open http://localhost:3001 in your browser
 2. Click "Get Started Free"
-3. Test with demo user: +919876543210 / OTP: 123456
-4. Navigate through the authentication flow
+3. Enter your phone number and request an OTP via WhatsApp
+4. Navigate through the authentication flow and role selection
 
 ## Common Commands
 
@@ -138,7 +138,7 @@ For detailed structure, see: [docs/PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTUR
 
 ✅ **Authentication**
 - Phone-based login with WhatsApp OTP
-- Demo users for testing
+- Secure OTP verification via Twilio
 - Role-based access control
 
 ✅ **Architecture**
@@ -159,17 +159,15 @@ For detailed structure, see: [docs/PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTUR
 - HTTPS/SSL enabled
 - HashiCorp Vault for secrets
 
-## Demo Credentials
+## Authentication Testing
 
-Test the app with these demo users (no actual SMS sent):
+To test the application:
 
-```
-Admin User:        +919876543210 → OTP: 123456
-Staff User:        +919876543211 → OTP: 654321
-US Admin User:     +14155552222  → OTP: 111111
-```
-
-After login, you'll go through role selection and can set up a test restaurant.
+1. Enter your phone number (or a test number for development)
+2. Request an OTP via WhatsApp
+3. Verify the OTP you receive
+4. Go through role selection to set up your account
+5. Create a restaurant and start tracking metrics
 
 ## Troubleshooting
 

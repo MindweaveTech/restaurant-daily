@@ -50,52 +50,26 @@ export async function POST(request: NextRequest) {
     const formattedPhone = phoneValidation.formatted!;
     logAuth('request-otp', formattedPhone, true, { purpose, preferredMethod });
 
-    // Check if this is a demo user first
-    const demoUser = OTPService.isDemoUser(formattedPhone);
+    // Check rate limiting
+    const isRateLimited = await OTPRateLimit.isRateLimited(formattedPhone);
+    if (isRateLimited) {
+      const remainingAttempts = await OTPRateLimit.getRemainingAttempts(formattedPhone);
 
-    // Skip rate limiting for demo users
-    if (!demoUser) {
-      // Check rate limiting for regular users only
-      const isRateLimited = await OTPRateLimit.isRateLimited(formattedPhone);
-      if (isRateLimited) {
-        const remainingAttempts = await OTPRateLimit.getRemainingAttempts(formattedPhone);
-
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Rate limit exceeded',
-            message: 'Too many OTP requests. Please try again later.',
-            remainingAttempts
-          },
-          { status: 429 }
-        );
-      }
-
-      // Record the attempt for regular users
-      OTPRateLimit.recordAttempt(formattedPhone);
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Rate limit exceeded',
+          message: 'Too many OTP requests. Please try again later.',
+          remainingAttempts
+        },
+        { status: 429 }
+      );
     }
 
-    if (demoUser) {
-      // Handle demo user - generate fixed OTP without sending actual message
-      const demoOTP = OTPService.generateDemoOTP(demoUser, purpose);
+    // Record the attempt
+    OTPRateLimit.recordAttempt(formattedPhone);
 
-      console.log(`🎭 Demo user OTP generated for ${formattedPhone.slice(-4)}: ${demoOTP.code}`);
-
-      return NextResponse.json({
-        success: true,
-        message: 'OTP sent via demo mode',
-        data: {
-          phoneNumber: PhoneValidator.formatForDisplay(formattedPhone),
-          method: 'demo',
-          expiresIn: '30 minutes', // Demo OTPs last longer
-          canResendIn: '1 minute',
-          isDemoUser: true,
-          demoOTP: process.env.NODE_ENV === 'development' ? demoOTP.code : undefined // Only show in dev
-        }
-      });
-    }
-
-    // Send OTP via Twilio for regular users
+    // Send OTP via Twilio
     const messageResult = await TwilioMessagingClient.sendOTP({
       phoneNumber: formattedPhone,
       purpose,

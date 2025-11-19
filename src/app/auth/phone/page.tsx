@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChefHat, ArrowLeft, Send, User, UserCheck } from 'lucide-react';
+import { ChefHat, ArrowLeft, Send } from 'lucide-react';
 import Link from 'next/link';
 import PhoneInput from '@/components/ui/phone-input';
 import { cn } from '@/lib/utils';
@@ -67,72 +67,6 @@ export default function PhoneAuthPage() {
     }
   };
 
-  const handleDemoLogin = async (role: 'admin' | 'staff') => {
-    setLoading(true);
-    setError('');
-
-    const demoPhones = {
-      admin: '+919876543210', // Existing restaurant admin
-      staff: '+919876543211'  // Existing staff member
-    };
-
-    const demoPhone = demoPhones[role];
-
-    try {
-      // Step 1: Request OTP for demo user
-      const response = await fetch('/api/auth/request-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phoneNumber: demoPhone,
-          preferredMethod: 'whatsapp',
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to request demo OTP');
-      }
-
-      // Step 2: Auto-verify with demo OTP
-      const demoOTPs = {
-        admin: '123456',
-        staff: '654321'
-      };
-
-      const verifyResponse = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phoneNumber: demoPhone,
-          otpCode: demoOTPs[role],
-        }),
-      });
-
-      const verifyData = await verifyResponse.json();
-
-      if (verifyResponse.ok) {
-        // Store token and redirect
-        localStorage.setItem('authToken', verifyData.token);
-
-        if (role === 'admin') {
-          router.push('/dashboard/admin');
-        } else {
-          router.push('/dashboard/staff');
-        }
-      } else {
-        setError(verifyData.error || 'Demo login failed');
-      }
-    } catch (err) {
-      setError('Demo login failed. Please try again.');
-      console.error('Demo login error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
@@ -212,50 +146,6 @@ export default function PhoneAuthPage() {
             </p>
           </div>
 
-          {/* Demo Login Buttons */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <p className="text-sm font-medium text-gray-700 text-center mb-4">
-              🎭 Quick Demo Access
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => handleDemoLogin('admin')}
-                disabled={loading}
-                data-testid="demo-admin-button"
-                className={cn(
-                  'flex items-center justify-center px-4 py-3 rounded-lg font-medium text-sm',
-                  'transition-all duration-200 border border-blue-200',
-                  'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-                  loading
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-blue-50 hover:bg-blue-100 text-blue-700 hover:border-blue-300'
-                )}
-              >
-                <UserCheck className="h-4 w-4 mr-2" />
-                Demo Admin
-              </button>
-
-              <button
-                onClick={() => handleDemoLogin('staff')}
-                disabled={loading}
-                data-testid="demo-staff-button"
-                className={cn(
-                  'flex items-center justify-center px-4 py-3 rounded-lg font-medium text-sm',
-                  'transition-all duration-200 border border-green-200',
-                  'focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2',
-                  loading
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-green-50 hover:bg-green-100 text-green-700 hover:border-green-300'
-                )}
-              >
-                <User className="h-4 w-4 mr-2" />
-                Demo Staff
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 text-center mt-3">
-              One-click login for testing • Admin: MindWeave Restaurant • Staff: Team Member
-            </p>
-          </div>
 
           {/* Security Notice */}
           <div className="mt-8 p-4 bg-orange-50 rounded-lg border border-orange-200">

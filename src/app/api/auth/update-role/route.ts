@@ -9,9 +9,6 @@ interface JWTPayload {
   restaurant_id?: string | null;
   exp: number;
   iat: number;
-  isDemoUser?: boolean;
-  demoRole?: string;
-  demoRestaurantName?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -63,15 +60,13 @@ export async function POST(request: NextRequest) {
     let existingUser = null;
     let restaurant = null;
 
-    if (!decoded.isDemoUser) {
-      try {
-        existingUser = await userService.getUserByPhone(decoded.phone);
-        if (existingUser?.restaurant_id) {
-          restaurant = await restaurantService.getRestaurantById(existingUser.restaurant_id);
-        }
-      } catch (error) {
-        console.log('Failed to check existing user:', error);
+    try {
+      existingUser = await userService.getUserByPhone(decoded.phone);
+      if (existingUser?.restaurant_id) {
+        restaurant = await restaurantService.getRestaurantById(existingUser.restaurant_id);
       }
+    } catch (error) {
+      console.log('Failed to check existing user:', error);
     }
 
     // Create new token with role information
@@ -86,19 +81,11 @@ export async function POST(request: NextRequest) {
       exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 hours
     };
 
-    // Preserve demo user specific fields if they exist
-    if (decoded.isDemoUser) {
-      newTokenPayload.isDemoUser = decoded.isDemoUser;
-      newTokenPayload.demoRole = role; // Update demo role to match selected role
-      newTokenPayload.demoRestaurantName = decoded.demoRestaurantName;
-    }
-
     console.log('🔍 Role selection debug:');
     console.log('  - Original restaurant_id:', decoded.restaurant_id);
     console.log('  - Database restaurant_id:', existingUser?.restaurant_id);
     console.log('  - Final restaurant_id:', newTokenPayload.restaurant_id);
     console.log('  - Restaurant name:', newTokenPayload.restaurant_name);
-    console.log('  - Is demo user:', decoded.isDemoUser);
 
     const newToken = jwt.sign(
       newTokenPayload,

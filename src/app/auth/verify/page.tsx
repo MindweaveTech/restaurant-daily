@@ -136,22 +136,9 @@ export default function VerifyOTPPage() {
         sessionStorage.removeItem('pendingPhone');
         sessionStorage.removeItem('otpMethod');
 
-        // Check if user needs role selection or can go directly to dashboard
-        const { requiresRoleSelection, isDemoUser, demoRole } = data.user || {};
-
-        // Show success briefly then redirect
+        // All users go to role selection
         setTimeout(() => {
-          if (!requiresRoleSelection && isDemoUser) {
-            // Demo users with pre-defined roles go straight to dashboard
-            if (demoRole === 'admin') {
-              router.push('/dashboard/admin');
-            } else {
-              router.push('/dashboard');
-            }
-          } else {
-            // Regular users go to role selection
-            router.push('/auth/role-selection');
-          }
+          router.push('/auth/role-selection');
         }, 1500);
       } else {
         setError(data.error || 'Invalid verification code. Please try again.');
