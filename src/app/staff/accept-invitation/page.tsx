@@ -159,7 +159,7 @@ function AcceptInvitationContent() {
               {/* Invitation Details */}
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                  You're Invited! 🎉
+                  You&apos;re Invited! 🎉
                 </h2>
 
                 <div className="space-y-3 mb-6">

@@ -308,7 +308,7 @@ export default function StaffInvitationModal({ isOpen, onClose }: StaffInvitatio
                   <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-600 mb-2">No pending invitations</p>
                   <p className="text-sm text-gray-500">
-                    Send your first invitation using the "Invite New Staff" tab.
+                    Send your first invitation using the &quot;Invite New Staff&quot; tab.
                   </p>
                 </div>
               ) : (
