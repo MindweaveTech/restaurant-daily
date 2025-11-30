@@ -1,5 +1,6 @@
-import { getSupabaseAdmin, supabaseAdmin, Restaurant, User, StaffInvitation } from './supabase';
+import { getSupabaseAdmin, supabaseAdmin, Restaurant, User, StaffInvitation, SystemAdmin, BusinessInvitation } from './supabase';
 import { SupabaseClient } from '@supabase/supabase-js';
+import type { UserRole } from '@/types';
 
 // Helper to get client with fallback
 async function getClient(): Promise<SupabaseClient> {
@@ -10,6 +11,138 @@ async function getClient(): Promise<SupabaseClient> {
       throw new Error('No Supabase client available');
     }
     return supabaseAdmin;
+  }
+}
+
+// System Admin operations (for superadmins)
+export class SystemAdminService {
+  async getByEmail(email: string): Promise<SystemAdmin | null> {
+    const client = await getClient();
+    const { data, error } = await client
+      .from('system_admins')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') return null;
+      console.error('Database error fetching system admin by email:', error);
+      throw new Error(`Failed to fetch system admin: ${error.message}`);
+    }
+    return data;
+  }
+
+  async getByPhone(phone: string): Promise<SystemAdmin | null> {
+    const client = await getClient();
+    const { data, error } = await client
+      .from('system_admins')
+      .select('*')
+      .eq('phone', phone)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') return null;
+      console.error('Database error fetching system admin by phone:', error);
+      throw new Error(`Failed to fetch system admin: ${error.message}`);
+    }
+    return data;
+  }
+
+  async updateLastLogin(id: string): Promise<void> {
+    const client = await getClient();
+    const { error } = await client
+      .from('system_admins')
+      .update({ last_login: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Database error updating system admin last login:', error);
+    }
+  }
+}
+
+// Business Invitation operations (for inviting business admins)
+export class BusinessInvitationService {
+  async createInvitation(data: {
+    invited_by: string;
+    phone: string;
+    restaurant_name: string;
+    email?: string;
+  }): Promise<BusinessInvitation> {
+    const invitationToken = crypto.randomUUID();
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days expiry
+
+    const invitationData = {
+      invited_by: data.invited_by,
+      phone: data.phone,
+      email: data.email || null,
+      restaurant_name: data.restaurant_name,
+      role: 'business_admin' as const,
+      status: 'pending' as const,
+      invitation_token: invitationToken,
+      expires_at: expiresAt.toISOString(),
+    };
+
+    const client = await getClient();
+    const { data: invitation, error } = await client
+      .from('business_invitations')
+      .insert([invitationData])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Database error creating business invitation:', error);
+      throw new Error(`Failed to create business invitation: ${error.message}`);
+    }
+    return invitation;
+  }
+
+  async getByToken(token: string): Promise<BusinessInvitation | null> {
+    const client = await getClient();
+    const { data, error } = await client
+      .from('business_invitations')
+      .select('*')
+      .eq('invitation_token', token)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') return null;
+      console.error('Database error fetching business invitation:', error);
+      throw new Error(`Failed to fetch business invitation: ${error.message}`);
+    }
+    return data;
+  }
+
+  async markAccepted(id: string): Promise<void> {
+    const client = await getClient();
+    const { error } = await client
+      .from('business_invitations')
+      .update({
+        status: 'accepted',
+        accepted_at: new Date().toISOString()
+      })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Database error accepting business invitation:', error);
+      throw new Error(`Failed to accept business invitation: ${error.message}`);
+    }
+  }
+
+  async getAllPending(): Promise<BusinessInvitation[]> {
+    const client = await getClient();
+    const { data, error } = await client
+      .from('business_invitations')
+      .select('*')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Database error fetching pending business invitations:', error);
+      throw new Error(`Failed to fetch business invitations: ${error.message}`);
+    }
+    return data || [];
   }
 }
 
@@ -113,8 +246,10 @@ export class UserService {
 
   async createUser(data: {
     phone: string;
-    restaurant_id?: string;
-    role: 'admin' | 'staff';
+    email?: string;
+    name?: string;
+    restaurant_id?: string | null;
+    role: UserRole;
     permissions?: string[];
     status?: 'pending' | 'active' | 'inactive';
     invited_by?: string;
@@ -122,6 +257,8 @@ export class UserService {
 
     const userData = {
       phone: data.phone,
+      email: data.email || null,
+      name: data.name || null,
       restaurant_id: data.restaurant_id || null,
       role: data.role,
       permissions: data.permissions || [],
@@ -265,6 +402,27 @@ export class StaffInvitationService {
     return invitation;
   }
 
+  // Alias for getInvitationByToken for consistency with other services
+  async getByToken(token: string): Promise<StaffInvitation | null> {
+    return this.getInvitationByToken(token);
+  }
+
+  async markAccepted(id: string): Promise<void> {
+    const client = await getClient();
+    const { error } = await client
+      .from('staff_invitations')
+      .update({
+        status: 'accepted',
+        accepted_at: new Date().toISOString()
+      })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Database error marking staff invitation accepted:', error);
+      throw new Error(`Failed to accept staff invitation: ${error.message}`);
+    }
+  }
+
   async getRestaurantInvitations(restaurant_id: string): Promise<StaffInvitation[]> {
     const client = await getClient();
     const { data: invitations, error } = await client
@@ -358,6 +516,8 @@ export class StaffInvitationService {
 }
 
 // Singleton instances
+export const systemAdminService = new SystemAdminService();
+export const businessInvitationService = new BusinessInvitationService();
 export const restaurantService = new RestaurantService();
 export const userService = new UserService();
 export const staffInvitationService = new StaffInvitationService();

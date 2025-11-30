@@ -54,6 +54,21 @@ export const supabase: SupabaseClient | null = supabaseUrl && supabaseAnonKey
   : null;
 
 // Database types
+
+// Role type for multi-tenant auth
+export type UserRole = 'superadmin' | 'business_admin' | 'employee';
+
+export interface SystemAdmin {
+  id: string;
+  email: string;
+  phone?: string;
+  name?: string;
+  status: 'active' | 'inactive' | 'suspended';
+  created_at: string;
+  updated_at: string;
+  last_login?: string;
+}
+
 export interface Restaurant {
   id: string;
   name: string;
@@ -70,8 +85,10 @@ export interface Restaurant {
 export interface User {
   id: string;
   phone: string;
+  email?: string;
+  name?: string;
   restaurant_id?: string;
-  role: 'admin' | 'staff';
+  role: UserRole;
   permissions?: string[];
   status: 'pending' | 'active' | 'inactive';
   invited_by?: string;
@@ -81,12 +98,26 @@ export interface User {
   updated_at: string;
 }
 
+export interface BusinessInvitation {
+  id: string;
+  invited_by: string;
+  email?: string;
+  phone: string;
+  restaurant_name: string;
+  role: 'business_admin';
+  status: 'pending' | 'accepted' | 'expired' | 'cancelled';
+  invitation_token: string;
+  expires_at: string;
+  accepted_at?: string;
+  created_at: string;
+}
+
 export interface StaffInvitation {
   id: string;
   restaurant_id: string;
   phone: string;
   invited_by: string;
-  role: 'staff';
+  role: 'employee';
   permissions?: string[];
   status: 'pending' | 'accepted' | 'expired' | 'cancelled';
   invitation_token?: string;

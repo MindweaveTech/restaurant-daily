@@ -66,8 +66,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Ensure user is admin
-    if (decoded.role !== 'admin') {
+    // Ensure user is admin or business_admin
+    if (decoded.role !== 'admin' && decoded.role !== 'business_admin') {
       return NextResponse.json(
         { error: 'Only restaurant admins can create restaurants' },
         { status: 403 }
@@ -100,18 +100,18 @@ export async function POST(request: NextRequest) {
     // Create or update user record
     let user = existingUser;
     if (!user) {
-      // Create new admin user
+      // Create new business_admin user
       user = await userService.createUser({
         phone: decoded.phone,
         restaurant_id: restaurant.id,
-        role: 'admin',
+        role: 'business_admin',
         status: 'active',
       });
     } else {
       // Update existing user with restaurant
       user = await userService.updateUser(user.id, {
         restaurant_id: restaurant.id,
-        role: 'admin',
+        role: 'business_admin',
         status: 'active',
       });
     }
