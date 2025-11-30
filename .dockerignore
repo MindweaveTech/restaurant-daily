@@ -1,0 +1,15 @@
+node_modules
+.next
+.git
+.gitignore
+*.md
+.env*
+.dockerignore
+Dockerfile
+.husky
+tests
+test-results
+playwright-report
+.app.log
+.app.pid
+.vault-token

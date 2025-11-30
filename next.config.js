@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   // Headers to handle HTTPS properly
   async headers() {
     return [
@@ -14,7 +15,6 @@ const nextConfig = {
       },
     ]
   },
-  // Remove standalone mode for now
 }
 
 module.exports = nextConfig
